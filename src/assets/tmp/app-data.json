@@ -1,0 +1,26 @@
+{
+  "app": {
+    "name": "VX-Talent",
+    "description": "VX-Talent 是基于ANT 的后台样例模板"
+  },
+  "user": {
+    "name": "Admin",
+    "avatar": "./assets/tmp/img/avatar.jpg",
+    "email": "JackRen@knx.com.cn"
+  },
+  "menu": [ 
+    {
+      "text": "常用案例",
+      "i18n": "menu.home.main",
+      "group": true,
+      "hideInBreadcrumb": true,  
+      "children": [
+        {
+          "text": "首页",
+          "link": "/home",
+          "i18n": "menu.home.main"
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { SettingsService } from '@knz/theme';
+import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { SettingsService } from '@knz/theme'
 
 @Component({
   selector: 'layout-header',
@@ -7,15 +7,15 @@ import { SettingsService } from '@knz/theme';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
-  searchToggleStatus: boolean;
+  searchToggleStatus: boolean
 
   constructor(public settings: SettingsService) {}
 
   toggleCollapsedSidebar() {
-    this.settings.setLayout('collapsed', !this.settings.layout.collapsed);
+    this.settings.setLayout('collapsed', !this.settings.layout.collapsed)
   }
 
   searchToggleChange() {
-    this.searchToggleStatus = !this.searchToggleStatus;
+    this.searchToggleStatus = !this.searchToggleStatus
   }
 }

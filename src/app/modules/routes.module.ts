@@ -1,16 +1,13 @@
-import { NgModule } from '@angular/core';
+import { NgModule } from '@angular/core'
 
-import { SharedModule } from '@shared';
-import { RouteRoutingModule } from './routes-routing.module';
-  
-import { HomeComponent } from './home/home.component';
-import { LoginComponent } from './auth/login/index.component'; 
+import { SharedModule } from '@shared'
+import { RouteRoutingModule } from './routes-routing.module'
 
-const COMPONENTS = [
-  HomeComponent,
-  LoginComponent
-];
-const COMPONENTS_NOROUNT = [];
+import { HomeComponent } from './home/home.component'
+import { LoginComponent } from './auth/login/index.component'
+
+const COMPONENTS = [HomeComponent, LoginComponent]
+const COMPONENTS_NOROUNT = []
 
 @NgModule({
   imports: [SharedModule, RouteRoutingModule],

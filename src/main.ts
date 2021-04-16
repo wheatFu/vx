@@ -1,16 +1,16 @@
-import { enableProdMode, ViewEncapsulation } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { enableProdMode, ViewEncapsulation } from '@angular/core'
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic'
 
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
+import { AppModule } from './app/app.module'
+import { environment } from './environments/environment'
 
-import { preloaderFinished } from '@knz/theme';
-preloaderFinished();
+import { preloaderFinished } from '@knz/theme'
+preloaderFinished()
 
-import { hmrBootstrap } from './hmr';
+import { hmrBootstrap } from './hmr'
 
 if (environment.production) {
-  enableProdMode();
+  enableProdMode()
 }
 
 const bootstrap = () => {
@@ -21,20 +21,20 @@ const bootstrap = () => {
     })
     .then(res => {
       if ((window as any).appBootstrap) {
-        (window as any).appBootstrap();
+        ;(window as any).appBootstrap()
       }
-      return res;
-    });
-};
+      return res
+    })
+}
 
 if (environment.hmr) {
   // tslint:disable-next-line: no-string-literal
   if (module['hot']) {
-    hmrBootstrap(module, bootstrap);
+    hmrBootstrap(module, bootstrap)
   } else {
-    console.error('HMR is not enabled for webpack-dev-server!');
-    console.log('Are you using the --hmr flag for ng serve?');
+    console.error('HMR is not enabled for webpack-dev-server!')
+    console.log('Are you using the --hmr flag for ng serve?')
   }
 } else {
-  bootstrap();
+  bootstrap()
 }

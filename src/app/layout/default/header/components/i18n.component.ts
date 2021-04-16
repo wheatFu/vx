@@ -1,20 +1,16 @@
-import { Component, Inject, Input, ChangeDetectionStrategy } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { SettingsService, KNZ_I18N_TOKEN } from '@knz/theme';
-import { InputBoolean } from '@knz/util';
+import { Component, Inject, Input, ChangeDetectionStrategy } from '@angular/core'
+import { DOCUMENT } from '@angular/common'
+import { SettingsService, KNZ_I18N_TOKEN } from '@knz/theme'
+import { InputBoolean } from '@knz/util'
 
-import { I18NService } from '@core';
+import { I18NService } from '@core'
 
 @Component({
   selector: 'header-i18n',
   template: `
-  <div
-        class="knz-default__nav-item"
-        nz-dropdown
-        [nzDropdownMenu]="langMenu" nzPlacement="bottomRight"
-      >
-      <i nz-icon nzType="global"></i> 
-      </div>
+    <div class="knz-default__nav-item" nz-dropdown [nzDropdownMenu]="langMenu" nzPlacement="bottomRight">
+      <i nz-icon nzType="global"></i>
+    </div>
 
     <i
       *ngIf="!showLangText"
@@ -42,14 +38,14 @@ import { I18NService } from '@core';
 })
 export class HeaderI18nComponent {
   /** Whether to display language text */
-  @Input() @InputBoolean() showLangText = true;
+  @Input() @InputBoolean() showLangText = true
 
   get langs() {
-    return this.i18n.getLangs();
+    return this.i18n.getLangs()
   }
 
   get curLangCode() {
-    return this.settings.layout.lang;
+    return this.settings.layout.lang
   }
 
   constructor(
@@ -59,13 +55,13 @@ export class HeaderI18nComponent {
   ) {}
 
   change(lang: string) {
-    const spinEl = this.doc.createElement('div');
-    spinEl.setAttribute('class', `page-loading ant-spin ant-spin-lg ant-spin-spinning`);
-    spinEl.innerHTML = `<span class="ant-spin-dot ant-spin-dot-spin"><i></i><i></i><i></i><i></i></span>`;
-    this.doc.body.appendChild(spinEl);
+    const spinEl = this.doc.createElement('div')
+    spinEl.setAttribute('class', `page-loading ant-spin ant-spin-lg ant-spin-spinning`)
+    spinEl.innerHTML = `<span class="ant-spin-dot ant-spin-dot-spin"><i></i><i></i><i></i><i></i></span>`
+    this.doc.body.appendChild(spinEl)
 
-    this.i18n.use(lang);
-    this.settings.setLayout('lang', lang);
-    setTimeout(() => this.doc.location.reload());
+    this.i18n.use(lang)
+    this.settings.setLayout('lang', lang)
+    setTimeout(() => this.doc.location.reload())
   }
 }

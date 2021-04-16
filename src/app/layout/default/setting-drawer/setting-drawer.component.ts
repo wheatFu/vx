@@ -1,10 +1,10 @@
-import { Component, ChangeDetectionStrategy, NgZone, Inject, ChangeDetectorRef } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { NzMessageService } from 'ng-zorro-antd';
-import { LazyService, copy, deepCopy } from '@knz/util';
-import { SettingsService } from '@knz/theme';
+import { Component, ChangeDetectionStrategy, NgZone, Inject, ChangeDetectorRef } from '@angular/core'
+import { DOCUMENT } from '@angular/common'
+import { NzMessageService } from 'ng-zorro-antd'
+import { LazyService, copy, deepCopy } from '@knz/util'
+import { SettingsService } from '@knz/theme'
 
-const VXDEFAULTVAR = 'vx-default-vars';
+const VXDEFAULTVAR = 'vx-default-vars'
 const DEFAULT_COLORS = [
   {
     key: 'dust',
@@ -42,7 +42,7 @@ const DEFAULT_COLORS = [
     key: 'black',
     color: '#001529',
   },
-];
+]
 const DEFAULT_VARS = {
   'primary-color': { label: '主颜色', type: 'color', default: '#1890ff' },
   'vx-default-header-hg': {
@@ -195,7 +195,7 @@ const DEFAULT_VARS = {
     min: 8,
     max: 128,
   },
-};
+}
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -208,15 +208,15 @@ const DEFAULT_VARS = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SettingDrawerComponent {
-  private loadedLess = false;
+  private loadedLess = false
 
-  collapse = false;
+  collapse = false
   get layout() {
-    return this.settingSrv.layout;
+    return this.settingSrv.layout
   }
-  data: any = {};
-  color: string;
-  colors = DEFAULT_COLORS;
+  data: any = {}
+  color: string
+  colors = DEFAULT_COLORS
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -226,115 +226,115 @@ export class SettingDrawerComponent {
     private zone: NgZone,
     @Inject(DOCUMENT) private doc: any,
   ) {
-    this.color = this.cachedData['@primary-color'] || this.DEFAULT_PRIMARY;
-    this.resetData(this.cachedData, false);
+    this.color = this.cachedData['@primary-color'] || this.DEFAULT_PRIMARY
+    this.resetData(this.cachedData, false)
   }
 
   private get cachedData() {
-    return this.settingSrv.layout[VXDEFAULTVAR] || {};
+    return this.settingSrv.layout[VXDEFAULTVAR] || {}
   }
 
   private get DEFAULT_PRIMARY() {
-    return DEFAULT_VARS['primary-color'].default;
+    return DEFAULT_VARS['primary-color'].default
   }
 
   private loadLess(): Promise<void> {
-    if (this.loadedLess) return Promise.resolve();
+    if (this.loadedLess) return Promise.resolve()
     return this.lazy
       .loadStyle('./assets/vx-default.less', 'stylesheet/less')
       .then(() => {
-        const lessConfigNode = this.doc.createElement('script');
+        const lessConfigNode = this.doc.createElement('script')
         lessConfigNode.innerHTML = `
           window.less = {
             async: true,
             env: 'production',
             javascriptEnabled: true
           };
-        `;
-        this.doc.body.appendChild(lessConfigNode);
+        `
+        this.doc.body.appendChild(lessConfigNode)
       })
       .then(() => this.lazy.loadScript('https://gw.alipayobjects.com/os/lib/less.js/3.8.1/less.min.js'))
       .then(() => {
-        this.loadedLess = true;
-      });
+        this.loadedLess = true
+      })
   }
 
   private genVars() {
-    const { data, color, validKeys } = this;
+    const { data, color, validKeys } = this
     const vars: any = {
       [`@primary-color`]: color,
-    };
-    validKeys.filter(key => key !== 'primary-color').forEach(key => (vars[`@${key}`] = data[key].value));
-    this.setLayout(VXDEFAULTVAR, vars);
-    return vars;
+    }
+    validKeys.filter(key => key !== 'primary-color').forEach(key => (vars[`@${key}`] = data[key].value))
+    this.setLayout(VXDEFAULTVAR, vars)
+    return vars
   }
 
   private runLess() {
-    const { zone, msg, cdr } = this;
-    const msgId = msg.loading(`正在编译主题！`, { nzDuration: 0 }).messageId;
+    const { zone, msg, cdr } = this
+    const msgId = msg.loading(`正在编译主题！`, { nzDuration: 0 }).messageId
     setTimeout(() => {
       zone.runOutsideAngular(() => {
         this.loadLess().then(() => {
-          (window as any).less.modifyVars(this.genVars()).then(() => {
-            msg.success('成功');
-            msg.remove(msgId);
-            zone.run(() => cdr.detectChanges());
-          });
-        });
-      });
-    }, 200);
+          ;(window as any).less.modifyVars(this.genVars()).then(() => {
+            msg.success('成功')
+            msg.remove(msgId)
+            zone.run(() => cdr.detectChanges())
+          })
+        })
+      })
+    }, 200)
   }
 
   toggle() {
-    this.collapse = !this.collapse;
+    this.collapse = !this.collapse
   }
 
   changeColor(color: string) {
-    this.color = color;
+    this.color = color
     Object.keys(DEFAULT_VARS)
       .filter(key => DEFAULT_VARS[key].default === '@primary-color')
-      .forEach(key => delete this.cachedData[`@${key}`]);
-    this.resetData(this.cachedData, false);
+      .forEach(key => delete this.cachedData[`@${key}`])
+    this.resetData(this.cachedData, false)
   }
 
   setLayout(name: string, value: any) {
-    this.settingSrv.setLayout(name, value);
+    this.settingSrv.setLayout(name, value)
   }
 
   private resetData(nowData?: {}, run = true) {
-    nowData = nowData || {};
-    const data = deepCopy(DEFAULT_VARS);
+    nowData = nowData || {}
+    const data = deepCopy(DEFAULT_VARS)
     Object.keys(data).forEach(key => {
-      const value = nowData![`@${key}`] || data[key].default || '';
-      data[key].value = value === `@primary-color` ? this.color : value;
-    });
-    this.data = data;
+      const value = nowData![`@${key}`] || data[key].default || ''
+      data[key].value = value === `@primary-color` ? this.color : value
+    })
+    this.data = data
     if (run) {
-      this.cdr.detectChanges();
-      this.runLess();
+      this.cdr.detectChanges()
+      this.runLess()
     }
   }
 
   private get validKeys(): string[] {
-    return Object.keys(this.data).filter(key => this.data[key].value !== this.data[key].default);
+    return Object.keys(this.data).filter(key => this.data[key].value !== this.data[key].default)
   }
 
   apply() {
-    this.runLess();
+    this.runLess()
   }
 
   reset() {
-    this.color = this.DEFAULT_PRIMARY;
-    this.settingSrv.setLayout(VXDEFAULTVAR, {});
-    this.resetData({});
+    this.color = this.DEFAULT_PRIMARY
+    this.settingSrv.setLayout(VXDEFAULTVAR, {})
+    this.resetData({})
   }
 
   copyVar() {
-    const vars = this.genVars();
+    const vars = this.genVars()
     const copyContent = Object.keys(vars)
       .map(key => `${key}: ${vars[key]};`)
-      .join('\n');
-    copy(copyContent);
-    this.msg.success('Copy success');
+      .join('\n')
+    copy(copyContent)
+    this.msg.success('Copy success')
   }
 }

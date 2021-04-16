@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { SettingsService } from '@knz/theme';
+import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { SettingsService } from '@knz/theme'
 
 @Component({
   selector: 'layout-sidebar',

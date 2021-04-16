@@ -1,10 +1,10 @@
-import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { NzMessageService } from 'ng-zorro-antd';
-import { SettingsService } from '@knz/theme';
-import { DA_SERVICE_TOKEN, ITokenService } from '@knz/auth';
-import { _HttpClient } from '@knz/theme';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core'
+import { Router } from '@angular/router'
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
+import { NzMessageService } from 'ng-zorro-antd'
+import { SettingsService } from '@knz/theme'
+import { DA_SERVICE_TOKEN, ITokenService } from '@knz/auth'
+import { _HttpClient } from '@knz/theme'
 
 @Component({
   selector: 'header-user',
@@ -20,41 +20,37 @@ import { _HttpClient } from '@knz/theme';
     </div>
     <nz-dropdown-menu #userMenu="nzDropdownMenu">
       <div nz-menu class="width-sm">
-       
         <div nz-menu-item (click)="logout()">
           <i nz-icon nzType="logout" class="mr-sm"></i>
           {{ 'menu.common.logout' | translate }}
         </div>
       </div>
     </nz-dropdown-menu>
-
-     
-
   `,
 })
 export class HeaderUserComponent {
-  isVisible = false;
-  isOkLoading = false;
+  isVisible = false
+  isOkLoading = false
   get oldpassword() {
-    return this.form.controls.oldpassword;
+    return this.form.controls.oldpassword
   }
   get password() {
-    return this.form.controls.password;
+    return this.form.controls.password
   }
   get confirm() {
-    return this.form.controls.confirm;
+    return this.form.controls.confirm
   }
-  form: FormGroup;
-  error = '';
-  type = 0;
-  visible = false;
-  status = 'pool';
-  progress = 0;
+  form: FormGroup
+  error = ''
+  type = 0
+  visible = false
+  status = 'pool'
+  progress = 0
   passwordProgressMap = {
     ok: 'success',
     pass: 'normal',
     pool: 'exception',
-  };
+  }
 
   constructor(
     public http: _HttpClient,
@@ -62,71 +58,70 @@ export class HeaderUserComponent {
     private router: Router,
     @Inject(DA_SERVICE_TOKEN) private tokenService: ITokenService,
     fb: FormBuilder,
-    public msg: NzMessageService
+    public msg: NzMessageService,
   ) {
     this.form = fb.group({
       oldpassword: [null, [Validators.required]],
       password: [null, [Validators.required, Validators.minLength(6), HeaderUserComponent.checkPassword.bind(this)]],
-      confirm: [null, [Validators.required, Validators.minLength(6), HeaderUserComponent.passwordEquar]]
-    });
+      confirm: [null, [Validators.required, Validators.minLength(6), HeaderUserComponent.passwordEquar]],
+    })
   }
 
   static checkPassword(control: FormControl) {
-    if (!control) return null;
-    const self: any = this;
-    self.visible = !!control.value;
+    if (!control) return null
+    const self: any = this
+    self.visible = !!control.value
     if (control.value && control.value.length > 9) {
-      self.status = 'ok';
+      self.status = 'ok'
     } else if (control.value && control.value.length > 5) {
-      self.status = 'pass';
+      self.status = 'pass'
     } else {
-      self.status = 'pool';
+      self.status = 'pool'
     }
 
     if (self.visible) {
-      self.progress = control.value.length * 10 > 100 ? 100 : control.value.length * 10;
+      self.progress = control.value.length * 10 > 100 ? 100 : control.value.length * 10
     }
   }
 
   static passwordEquar(control: FormControl) {
     if (!control || !control.parent) {
-      return null;
+      return null
     }
     if (control.value !== control.parent.get('password')!.value) {
-      return { equar: true };
+      return { equar: true }
     }
-    return null;
+    return null
   }
 
   showPwdModal(): void {
-    this.isVisible = true;
+    this.isVisible = true
   }
 
   pwdHandleOk(): void {
-    this.error = '';
+    this.error = ''
     Object.keys(this.form.controls).forEach(key => {
-      this.form.controls[key].markAsDirty();
-      this.form.controls[key].updateValueAndValidity();
-    });
+      this.form.controls[key].markAsDirty()
+      this.form.controls[key].updateValueAndValidity()
+    })
     if (this.form.invalid) {
-      return;
+      return
     }
-    this.isOkLoading = true;
-    const data = this.form.value;
-    this.visible = false;
-    this.http.post('/updatepwd', data).subscribe(() => { 
-        this.isVisible = false;
-        this.isOkLoading = false; 
-    });
-
+    this.isOkLoading = true
+    const data = this.form.value
+    this.visible = false
+    this.http.post('/updatepwd', data).subscribe(() => {
+      this.isVisible = false
+      this.isOkLoading = false
+    })
   }
 
   pwdHandleCancel(): void {
-    this.isVisible = false;
+    this.isVisible = false
   }
 
   logout() {
-    this.tokenService.clear();
-    this.router.navigateByUrl(this.tokenService.login_url!);
+    this.tokenService.clear()
+    this.router.navigateByUrl(this.tokenService.login_url!)
   }
 }

@@ -8,12 +8,12 @@
     "avatar": "./assets/tmp/img/avatar.jpg",
     "email": "JackRen@knx.com.cn"
   },
-  "menu": [ 
+  "menu": [
     {
       "text": "常用案例",
       "i18n": "menu.home.main",
       "group": true,
-      "hideInBreadcrumb": true,  
+      "hideInBreadcrumb": true,
       "children": [
         {
           "text": "首页",

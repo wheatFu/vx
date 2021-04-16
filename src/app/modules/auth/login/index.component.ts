@@ -1,12 +1,12 @@
-import { SettingsService, _HttpClient } from '@knz/theme';
-import { Component, OnDestroy, Inject, Optional } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { NzMessageService, NzModalService } from 'ng-zorro-antd';
-import { SocialService, SocialOpenType, ITokenService, DA_SERVICE_TOKEN } from '@knz/auth';
-import { ReuseTabService } from '@knz/assembly';
-import { environment } from '@env/environment';
-import { StartupService } from '@core';
+import { SettingsService, _HttpClient } from '@knz/theme'
+import { Component, OnDestroy, Inject, Optional } from '@angular/core'
+import { Router } from '@angular/router'
+import { FormGroup, FormBuilder, Validators } from '@angular/forms'
+import { NzMessageService, NzModalService } from 'ng-zorro-antd'
+import { SocialService, SocialOpenType, ITokenService, DA_SERVICE_TOKEN } from '@knz/auth'
+import { ReuseTabService } from '@knz/assembly'
+import { environment } from '@env/environment'
+import { StartupService } from '@core'
 
 @Component({
   selector: 'app-login',
@@ -15,7 +15,6 @@ import { StartupService } from '@core';
   providers: [SocialService],
 })
 export class LoginComponent implements OnDestroy {
-
   constructor(
     fb: FormBuilder,
     modalSrv: NzModalService,
@@ -36,76 +35,76 @@ export class LoginComponent implements OnDestroy {
       mobile: [null, [Validators.required, Validators.pattern(/^1\d{10}$/)]],
       captcha: [null, [Validators.required]],
       remember: [true],
-    });
-    modalSrv.closeAll();
+    })
+    modalSrv.closeAll()
   }
 
   // #region fields
 
   get userName() {
-    return this.form.controls.userName;
+    return this.form.controls.userName
   }
   get password() {
-    return this.form.controls.password;
+    return this.form.controls.password
   }
   get mobile() {
-    return this.form.controls.mobile;
+    return this.form.controls.mobile
   }
   get captcha() {
-    return this.form.controls.captcha;
+    return this.form.controls.captcha
   }
-  form: FormGroup;
-  error = '';
-  type = 0;
+  form: FormGroup
+  error = ''
+  type = 0
 
   // #region get captcha
 
-  count = 0;
-  interval$: any;
+  count = 0
+  interval$: any
 
   // #endregion
 
   switch(ret: any) {
-    this.type = ret.index;
+    this.type = ret.index
   }
 
   getCaptcha() {
     if (this.mobile.invalid) {
-      this.mobile.markAsDirty({ onlySelf: true });
-      this.mobile.updateValueAndValidity({ onlySelf: true });
-      return;
+      this.mobile.markAsDirty({ onlySelf: true })
+      this.mobile.updateValueAndValidity({ onlySelf: true })
+      return
     }
-    this.count = 59;
+    this.count = 59
     this.interval$ = setInterval(() => {
-      this.count -= 1;
+      this.count -= 1
       if (this.count <= 0) {
-        clearInterval(this.interval$);
+        clearInterval(this.interval$)
       }
-    }, 1000);
+    }, 1000)
   }
 
   // #endregion
 
   submit() {
-    this.error = '';
+    this.error = ''
     if (this.type === 0) {
-      this.userName.markAsDirty();
-      this.userName.updateValueAndValidity();
-      this.password.markAsDirty();
-      this.password.updateValueAndValidity();
+      this.userName.markAsDirty()
+      this.userName.updateValueAndValidity()
+      this.password.markAsDirty()
+      this.password.updateValueAndValidity()
       if (this.userName.invalid || this.password.invalid) {
-        return;
+        return
       }
     } else {
-      this.mobile.markAsDirty();
-      this.mobile.updateValueAndValidity();
-      this.captcha.markAsDirty();
-      this.captcha.updateValueAndValidity();
+      this.mobile.markAsDirty()
+      this.mobile.updateValueAndValidity()
+      this.captcha.markAsDirty()
+      this.captcha.updateValueAndValidity()
       if (this.mobile.invalid || this.captcha.invalid) {
-        return;
+        return
       }
     }
- 
+
     this.http
       .post('/login/account?_allow_anonymous=true', {
         type: this.type,
@@ -114,29 +113,29 @@ export class LoginComponent implements OnDestroy {
       })
       .subscribe((res: any) => {
         if (res.msg !== 'ok') {
-          this.error = res.msg;
-          return;
+          this.error = res.msg
+          return
         }
         // 清空路由复用信息
-        this.reuseTabService.clear();
+        this.reuseTabService.clear()
         // 设置用户Token信息
-        this.tokenService.set(res.user);
+        this.tokenService.set(res.user)
         // 重新获取 StartupService 内容，我们始终认为应用信息一般都会受当前用户授权范围而影响
         this.startupSrv.load().then(() => {
-          let url = this.tokenService.referrer!.url || '/';
+          let url = this.tokenService.referrer!.url || '/'
           if (url.includes('/passport')) {
-            url = '/';
+            url = '/'
           }
-          this.router.navigateByUrl(url);
-        });
-      });
+          this.router.navigateByUrl(url)
+        })
+      })
   }
- 
+
   // #endregion
 
   ngOnDestroy(): void {
     if (this.interval$) {
-      clearInterval(this.interval$);
+      clearInterval(this.interval$)
     }
   }
 }

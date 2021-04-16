@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core'
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -10,18 +10,18 @@ import { Component, Input } from '@angular/core';
   },
 })
 export class SettingDrawerItemComponent {
-  i: any = {};
+  i: any = {}
   @Input()
   set data(val: any) {
-    this.i = val;
+    this.i = val
     if (val.type === 'px') {
-      this.pxVal = +val.value.replace('px', '');
+      this.pxVal = +val.value.replace('px', '')
     }
   }
 
-  pxVal: number;
+  pxVal: number
   pxChange(val: number) {
-    this.i.value = `${val}px`;
+    this.i.value = `${val}px`
   }
-  format = value => `${value} px`;
+  format = value => `${value} px`
 }

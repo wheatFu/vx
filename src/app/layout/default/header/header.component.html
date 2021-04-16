@@ -1,32 +1,30 @@
 <div class="knz-default__header-logo">
-    <a [routerLink]="['/']" class="knz-default__header-logo-link">
-        <ul>
-            <li>
-                <img class="knz-default__header-logo" src="./assets/images/logo.png" style="max-height:30px;" />
-            </li>
-            <li>
-                <span>Test</span>
-            </li>
-        </ul>
-    </a>
+  <a [routerLink]="['/']" class="knz-default__header-logo-link">
+    <ul>
+      <li>
+        <img class="knz-default__header-logo" src="./assets/images/logo.png" style="max-height:30px;" />
+      </li>
+      <li>
+        <span>Test</span>
+      </li>
+    </ul>
+  </a>
 </div>
 <div class="knz-default__nav-wrap">
-    <ul class="knz-default__nav">
-        <!-- Menu -->
-        <li>
-            <div class="knz-default__nav-item" (click)="toggleCollapsedSidebar()">
-                <i nz-icon nzType="menu-{{ settings.layout.collapsed ? 'unfold' : 'fold' }}"></i>
-            </div>
-        </li>
-
-    </ul>
-    <ul class="knz-default__nav">
-        
-        <li class="hidden-mobile">
-            <header-i18n></header-i18n>
-        </li>
-        <li class="hidden-mobile">
-            <header-user></header-user>
-        </li>
-    </ul>
+  <ul class="knz-default__nav">
+    <!-- Menu -->
+    <li>
+      <div class="knz-default__nav-item" (click)="toggleCollapsedSidebar()">
+        <i nz-icon nzType="menu-{{ settings.layout.collapsed ? 'unfold' : 'fold' }}"></i>
+      </div>
+    </li>
+  </ul>
+  <ul class="knz-default__nav">
+    <li class="hidden-mobile">
+      <header-i18n></header-i18n>
+    </li>
+    <li class="hidden-mobile">
+      <header-user></header-user>
+    </li>
+  </ul>
 </div>

@@ -9,25 +9,32 @@ import {
   ElementRef,
   Renderer2,
   Inject,
-} from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { Router, NavigationEnd, RouteConfigLoadStart, RouteConfigLoadEnd, NavigationError, NavigationCancel } from '@angular/router';
-import { NzMessageService } from 'ng-zorro-antd';
-import { updateHostClass } from '@knz/util';
-import { SettingsService } from '@knz/theme';
-import { environment } from '@env/environment';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators'; 
+} from '@angular/core'
+import { DOCUMENT } from '@angular/common'
+import {
+  Router,
+  NavigationEnd,
+  RouteConfigLoadStart,
+  RouteConfigLoadEnd,
+  NavigationError,
+  NavigationCancel,
+} from '@angular/router'
+import { NzMessageService } from 'ng-zorro-antd'
+import { updateHostClass } from '@knz/util'
+import { SettingsService } from '@knz/theme'
+import { environment } from '@env/environment'
+import { Subject } from 'rxjs'
+import { takeUntil } from 'rxjs/operators'
 
 @Component({
   selector: 'layout-setting',
   templateUrl: './setting.component.html',
 })
 export class LayoutSettingComponent implements OnInit, AfterViewInit, OnDestroy {
-  private unsubscribe$ = new Subject<void>();
+  private unsubscribe$ = new Subject<void>()
   @ViewChild('settingHost', { read: ViewContainerRef, static: true })
-  private settingHost: ViewContainerRef;
-  isFetching = false;
+  private settingHost: ViewContainerRef
+  isFetching = false
 
   constructor(
     router: Router,
@@ -41,36 +48,36 @@ export class LayoutSettingComponent implements OnInit, AfterViewInit, OnDestroy 
     // scroll to top in change page
     router.events.pipe(takeUntil(this.unsubscribe$)).subscribe(evt => {
       if (!this.isFetching && evt instanceof RouteConfigLoadStart) {
-        this.isFetching = true;
+        this.isFetching = true
       }
       if (evt instanceof NavigationError || evt instanceof NavigationCancel) {
-        this.isFetching = false;
+        this.isFetching = false
         if (evt instanceof NavigationError) {
-          _message.error(`无法加载${evt.url}路由`, { nzDuration: 1000 * 3 });
+          _message.error(`无法加载${evt.url}路由`, { nzDuration: 1000 * 3 })
         }
-        return;
+        return
       }
       if (!(evt instanceof NavigationEnd || evt instanceof RouteConfigLoadEnd)) {
-        return;
+        return
       }
       if (this.isFetching) {
         setTimeout(() => {
-          this.isFetching = false;
-        }, 100);
+          this.isFetching = false
+        }, 100)
       }
-    });
+    })
   }
 
   private setClass() {
-    const { el, doc, renderer, settings } = this;
-    const layout = settings.layout;
+    const { el, doc, renderer, settings } = this
+    const layout = settings.layout
     updateHostClass(el.nativeElement, renderer, {
       ['vx-default']: true,
       [`vx-default__fixed`]: layout.fixed,
       [`vx-default__collapsed`]: layout.collapsed,
-    });
+    })
 
-    doc.body.classList[layout.colorWeak ? 'add' : 'remove']('color-weak');
+    doc.body.classList[layout.colorWeak ? 'add' : 'remove']('color-weak')
   }
 
   ngAfterViewInit(): void {
@@ -79,19 +86,19 @@ export class LayoutSettingComponent implements OnInit, AfterViewInit, OnDestroy 
       setTimeout(() => {
         // const settingFactory = this.resolver.resolveComponentFactory(SettingDrawerComponent);
         // this.settingHost.createComponent(settingFactory);
-      }, 22);
+      }, 22)
     }
   }
 
   ngOnInit() {
-    const { settings, unsubscribe$ } = this;
-    settings.notify.pipe(takeUntil(unsubscribe$)).subscribe(() => this.setClass());
-    this.setClass();
+    const { settings, unsubscribe$ } = this
+    settings.notify.pipe(takeUntil(unsubscribe$)).subscribe(() => this.setClass())
+    this.setClass()
   }
 
   ngOnDestroy() {
-    const { unsubscribe$ } = this;
-    unsubscribe$.next();
-    unsubscribe$.complete();
+    const { unsubscribe$ } = this
+    unsubscribe$.next()
+    unsubscribe$.complete()
   }
 }

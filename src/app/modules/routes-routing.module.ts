@@ -31,6 +31,10 @@ const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'index', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent, data: { title: '首页', titleI18n: '首页' } },
+      {
+        path: 'ga',
+        loadChildren: () => import('./ga/ga.module').then(m => m.GaModule),
+      },
     ],
   },
 ]

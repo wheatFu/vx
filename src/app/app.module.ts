@@ -1,17 +1,15 @@
 import { NgModule, LOCALE_ID, APP_INITIALIZER } from '@angular/core'
-import { HttpClient, HttpClientModule } from '@angular/common/http'
+import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 import { default as ngLang } from '@angular/common/locales/zh'
 import { NZ_I18N, zh_CN as zorroLang } from 'ng-zorro-antd'
-import { HTTP_INTERCEPTORS } from '@angular/common/http'
 import { registerLocaleData } from '@angular/common'
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core'
 import { TranslateHttpLoader } from '@ngx-translate/http-loader'
 
-import { DELON_LOCALE, zh_CN as vxLang } from '@knz/theme'
-import { KNZ_I18N_TOKEN } from '@knz/theme'
+import { DELON_LOCALE, zh_CN as vxLang, KNZ_I18N_TOKEN } from '@knz/theme'
 import { SimpleInterceptor } from '@knz/auth'
 import { DefaultInterceptor, StartupService, I18NService } from '@core'
 

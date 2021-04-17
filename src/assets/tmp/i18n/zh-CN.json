@@ -1,10 +1,35 @@
 {
-  "menu":{
-    "common":{
-      "logout": "退出登录"
-    },
-    "home":{
-      "main":"首页"
+  "zh-CN": "中",
+  "en": "英",
+  "menu": {
+    "hcm": {
+      "main": "首页",
+      "ga": "归集提取",
+      "loan": "综合贷款",
+      "crm": "综合服务",
+      "outreach": "外联平台"
     }
-  } 
+  },
+  "app": {
+    "login": {
+      "login": "登录",
+      "logout": "退出"
+    },
+    "common": {
+      "no data": "暂无数据",
+      "Drag and drop into the area": "拖拽到该区域",
+      "Confirm": "确定",
+      "Cancel": "取消",
+      "Return": "返回",
+      "Reset": "重置",
+      "submit successfully": "提交成功",
+      "Total": "总计",
+      "Append": "添加",
+      "Delete success": "删除成功",
+      "Yes": "是",
+      "No": "否",
+      "Remark": "备注",
+      "State": "状态"
+    }
+  }
 }

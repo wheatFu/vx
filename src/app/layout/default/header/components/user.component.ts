@@ -2,9 +2,8 @@ import { Component, Inject, ChangeDetectionStrategy } from '@angular/core'
 import { Router } from '@angular/router'
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms'
 import { NzMessageService } from 'ng-zorro-antd'
-import { SettingsService } from '@knz/theme'
+import { SettingsService, _HttpClient } from '@knz/theme'
 import { DA_SERVICE_TOKEN, ITokenService } from '@knz/auth'
-import { _HttpClient } from '@knz/theme'
 
 @Component({
   selector: 'header-user',
@@ -22,7 +21,7 @@ import { _HttpClient } from '@knz/theme'
       <div nz-menu class="width-sm">
         <div nz-menu-item (click)="logout()">
           <i nz-icon nzType="logout" class="mr-sm"></i>
-          {{ 'menu.common.logout' | translate }}
+          {{ 'app.login.logout' | translate }}
         </div>
       </div>
     </nz-dropdown-menu>

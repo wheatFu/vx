@@ -7,6 +7,7 @@ import {
   HttpErrorResponse,
   HttpEvent,
   HttpResponseBase,
+  HttpResponse,
 } from '@angular/common/http'
 import { Observable, of, throwError } from 'rxjs'
 import { mergeMap, catchError } from 'rxjs/operators'
@@ -14,6 +15,7 @@ import { NzMessageService, NzNotificationService } from 'ng-zorro-antd'
 import { _HttpClient } from '@knz/theme'
 import { environment } from '@env/environment'
 import { DA_SERVICE_TOKEN, ITokenService } from '@knz/auth'
+import { I18NService } from '../i18n/i18n.service'
 
 const CODEMESSAGE = {
   200: '服务器成功返回请求的数据。',
@@ -40,7 +42,11 @@ const CODEMESSAGE = {
   providedIn: 'root',
 })
 export class DefaultInterceptor implements HttpInterceptor {
-  constructor(private injector: Injector) {}
+  constructor(private injector: Injector, public i18NService: I18NService) {}
+
+  get msg(): NzMessageService {
+    return this.injector.get(NzMessageService)
+  }
 
   private get notification(): NzNotificationService {
     return this.injector.get(NzNotificationService)
@@ -68,30 +74,36 @@ export class DefaultInterceptor implements HttpInterceptor {
     // 业务处理：一些通用操作
     switch (ev.status) {
       case 200:
-        // 业务层级错误处理，以下是假定restful有一套统一输出格式（指不管成功与否都有相应的数据格式）情况下进行处理
-        // 例如响应内容：
-        //  错误内容：{ status: 1, msg: '非法参数' }
-        //  正确内容：{ status: 0, response: {  } }
-        // 则以下代码片断可直接适用
-        // if (event instanceof HttpResponse) {
-        //     const body: any = event.body;
-        //     if (body && body.status !== 0) {
-        //         this.msg.error(body.msg);
-        //         // 继续抛出错误中断后续所有 Pipe、subscribe 操作，因此：
-        //         // this.http.get('/').subscribe() 并不会触发
-        //         return throwError({});
-        //     } else {
-        //         // 重新修改 `body` 内容为 `response` 内容，对于绝大多数场景已经无须再关心业务状态码
-        //         return of(new HttpResponse(Object.assign(event, { body: body.response })));
-        //         // 或者依然保持完整的格式
-        //         return of(event);
-        //     }
-        // }
+        if (ev instanceof HttpResponse) {
+          const body: any = ev.body
+          // console.log(body)
+          if (body && body.errorcode && body.errorcode !== '-1') {
+            if (body.errormsg) this.msg.error(body.errormsg)
+            // 继续抛出错误中断后续所有 Pipe、subscribe 操作，因此：
+            // this.http.get('/').subscribe() 并不会触发\
+            return throwError(new HttpResponse({ ...ev, body: { error: body.errormsg } }))
+          } else {
+            // 重新修改 `body` 内容为 `response` 内容，对于绝大多数场景已经无须再关心业务状态码
+            // return of(new HttpResponse(Object.assign(event, { body: body.response })));
+            // 或者依然保持完整的格式
+            if (body.error) {
+              return throwError({ error: body.error })
+            }
+            // body.data.errorCode = body.errormsg;
+            // body.data.errorMsg = body.errormsg;
+            // debugger
+            if (body.data !== undefined && body.errorcode !== undefined && body.errorcode === 0)
+              // 业务消息体
+              return of(new HttpResponse({ ...ev, body: body.data }))
+            return of(ev)
+          }
+        }
         break
       case 401:
         this.notification.error(`未登录或登录已过期，请重新登录。`, ``)
-        // 清空 token 信息
-        ;(this.injector.get(DA_SERVICE_TOKEN) as ITokenService).clear()
+        // ;(this.injector.get(DA_SERVICE_TOKEN) as ITokenService).clear()
+        const da_token: ITokenService = this.injector.get(DA_SERVICE_TOKEN) as ITokenService
+        da_token.clear()
         this.goTo('/auth/login')
         break
       case 403:
@@ -100,6 +112,7 @@ export class DefaultInterceptor implements HttpInterceptor {
         // this.goTo(`/exception/${ev.status}`);
 
         // this.notification.error(`${ev.status}`, ``);
+        this.msg.error(`服务器错误`)
         break
       default:
         if (ev instanceof HttpErrorResponse) {
@@ -119,21 +132,32 @@ export class DefaultInterceptor implements HttpInterceptor {
     // 统一加上服务端前缀
     let url = req.url
 
-    if (!url.startsWith('https://') && !url.startsWith('http://')) {
+    if (!url.startsWith('https://') && !url.startsWith('http://') && url.indexOf('assets') < 0) {
       url = environment.SERVER_URL + url
     }
 
-    const headers = {
-      token: '123',
+    // 本地json文件去缓存
+    if (url.indexOf('.json') >= 0) {
+      url = url + '?t=' + Math.random()
     }
+
+    const headers = {}
+    const { token } = (this.injector.get(DA_SERVICE_TOKEN) as ITokenService).get()
+    if (token) headers['token'] = token
+
+    // 目前只加token 后续按需加
+    // headers['Content-Type'] = 'application/json;charset=UTF-8';
+    // headers['lang'] = this.appService.lang
+    // headers['FromResource'] = 'employeehome'
+
     const newReq = req.clone({
       url,
       setHeaders: headers,
     })
     return next.handle(newReq).pipe(
-      mergeMap((event: any) => {
+      mergeMap((event: unknown) => {
         // 允许统一对请求错误处理
-        if (event instanceof HttpResponseBase) return this.handleData(event)
+        if (event instanceof HttpResponseBase && event.status === 200) return this.handleData(event)
         // 若一切都正常，则后续操作
         return of(event)
       }),

@@ -10,15 +10,28 @@
   },
   "menu": [
     {
-      "text": "常用案例",
-      "i18n": "menu.home.main",
+      "text": "HCM",
+      "i18n": "menu.hcm",
       "group": true,
       "hideInBreadcrumb": true,
       "children": [
         {
           "text": "首页",
           "link": "/home",
-          "i18n": "menu.home.main"
+          "i18n": "menu.hcm.main",
+          "icon": "anticon-html5"
+        },
+        {
+          "text": "归集提取",
+          "link": "/ga",
+          "i18n": "menu.hcm.ga",
+          "icon": "anticon-cloud"
+        },
+        {
+          "text": "综合贷款",
+          "link": "/loan",
+          "i18n": "menu.hcm.loan",
+          "icon": "anticon-credit-card"
         }
       ]
     }

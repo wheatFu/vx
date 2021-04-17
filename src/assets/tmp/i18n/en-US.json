@@ -1,10 +1,35 @@
 {
-  "menu":{
-    "common":{
-      "logout": "退出登录"
-    },
-    "home":{
-      "main":"首页"
+  "zh-CN": "CN",
+  "en": "EN",
+  "menu": {
+    "hcm": {
+      "main": "Hcm home page",
+      "ga": "Gather",
+      "loan": "Loan",
+      "crm": "Crm",
+      "outreach": "Outreach"
     }
-  } 
+  },
+  "app": {
+    "login": {
+      "login": "login",
+      "logout": "logout"
+    },
+    "common": {
+      "no data": "No Data",
+      "Drag and drop into the area": "Drag and drop into the area",
+      "Confirm": "Confirm",
+      "Cancel": "Cancel",
+      "Reset": "Reset",
+      "Return": "Return",
+      "submit successfully": "submit successfully",
+      "Total": "Total",
+      "Append": "Append",
+      "Delete success": "Delete success",
+      "Yes": "Yes",
+      "No": "No",
+      "Remark": "Remark",
+      "State": "State"
+    }
+  }
 }

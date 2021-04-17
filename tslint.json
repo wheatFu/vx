@@ -20,13 +20,13 @@
     "directive-selector": [
       true,
       "attribute",
-      ["app", "passport", "exception", "layout", "header"],
+      ["app", "passport", "exception", "layout", "header", "vx"],
       "camelCase"
     ],
     "component-selector": [
       true,
       "element",
-      ["app", "passport", "exception", "layout", "header"],
+      ["app", "passport", "exception", "layout", "header", "vx"],
       "kebab-case"
     ],
     "import-blacklist": [
@@ -80,6 +80,7 @@
       false,
       "single"
     ],
+ 
     "trailing-comma": false,
     "no-conflicting-lifecycle": true,
     "no-host-metadata-property": true,
@@ -94,6 +95,8 @@
     "use-lifecycle-interface": true,
     "use-pipe-transform-interface": true,
     // Custom parts
+    "no-angle-bracket-type-assertion": false,
+    "no-string-literal": false,
     "no-submodule-imports": false,
     "no-implicit-dependencies": false,
     "curly": false,

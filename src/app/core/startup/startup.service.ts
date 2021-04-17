@@ -28,6 +28,20 @@ export class StartupService {
     private httpClient: HttpClient,
   ) {
     iconSrv.addIcon(...ICONS_AUTO, ...ICONS)
+    localStorage.setItem('browserType', this.returnBrowserType())
+  }
+
+  returnBrowserType(): string {
+    const ua = navigator.userAgent
+    if (/firefox/i.test(ua)) {
+      return 'firefox'
+    } else if (/chrome/i.test(ua)) {
+      return 'chrome'
+    } else if (/msie/i.test(ua)) {
+      return 'ie'
+    } else if ('ActiveXObject' in window) {
+      return 'ie11'
+    }
   }
 
   load(): Promise<any> {

@@ -1,4 +1,4 @@
-import { SettingsService, _HttpClient } from '@knz/theme'
+import { MenuService, SettingsService, _HttpClient } from '@knz/theme'
 import { Component, OnDestroy, Inject, Optional } from '@angular/core'
 import { Router } from '@angular/router'
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'
@@ -24,6 +24,7 @@ export class LoginComponent implements OnDestroy {
     @Optional()
     @Inject(ReuseTabService)
     private reuseTabService: ReuseTabService,
+    private menuService: MenuService,
     @Inject(DA_SERVICE_TOKEN) private tokenService: ITokenService,
     private startupSrv: StartupService,
     public http: _HttpClient,
@@ -122,6 +123,7 @@ export class LoginComponent implements OnDestroy {
         this.tokenService.set(res.user)
         // 重新获取 StartupService 内容，我们始终认为应用信息一般都会受当前用户授权范围而影响
         this.startupSrv.load().then(() => {
+          this.menuService.add(res?.menu)
           let url = this.tokenService.referrer!.url || '/'
           if (url.includes('/passport')) {
             url = '/'

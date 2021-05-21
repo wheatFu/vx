@@ -1,0 +1,56 @@
+<div class="table-warp">
+  <div class="table-spin" *ngIf="loading; else content">
+    <nz-spin nzSimple></nz-spin>
+  </div>
+
+  <ng-template #content>
+    <div class="sv-panel-body">
+      <nz-table
+        #basicTable
+        class="table-theme-default quit-style"
+        [nzData]="listdata"
+        [nzLoading]="loading"
+        [nzShowPagination]="false"
+        [nzPageSize]="999"
+        [nzScroll]="{ y: '330px' }"
+      >
+        <thead>
+          <tr>
+            <th nzWidth="60px">序号</th>
+            <ng-container *ngIf="listType === 1; else empHeader">
+              <th nzWidth="120px">职位编码</th>
+              <th nzWidth="160px">职位名称</th>
+              <th nzWidth="100px">是否主管职位</th>
+              <th nzWidth="160px">上级职位</th>
+            </ng-container>
+
+            <ng-template #empHeader>
+              <th nzWidth="100px">工号</th>
+              <th nzWidth="100px">姓名</th>
+              <th nzWidth="160px">部门</th>
+              <th nzWidth="160px">职位</th>
+            </ng-template>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dat of basicTable.data; index as i">
+            <td>{{ i + 1 }}</td>
+            <ng-container *ngIf="listType === 1; else empBody">
+              <td>{{ dat?.code }}</td>
+              <td>{{ dat?.name }}</td>
+              <td>{{ dat?.isSupervisor | boolePipe }}</td>
+              <td>{{ dat?.superior?.name }}</td>
+            </ng-container>
+
+            <ng-template #empBody>
+              <td>{{ dat?.code }}</td>
+              <td>{{ dat?.name }}</td>
+              <td>{{ dat?.organizationName }}</td>
+              <td>{{ dat?.positionName }}</td>
+            </ng-template>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </ng-template>
+</div>

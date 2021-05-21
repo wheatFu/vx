@@ -1,0 +1,218 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    <a [routerLink]="'/position/info'">职位信息</a>
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    {{ positionInfo?.id ? '编辑职位':'新增职位' }}
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+<div class="form-warp">
+  <form nz-form [formGroup]="validateForm" class="ant-advanced-search-form">
+    <div nz-row [nzGutter]="24">
+      <ng-container *ngIf='isRelated'>
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <span class="are-require">*</span>
+            <label>所属组织</label>
+            <div class="form-grup">
+              <nz-form-control nzErrorTip="所属组织不能为空">
+                <nz-input-group [nzSuffix]="orgUnit.value ? IconLow : IconAdd">
+                  <input type="text" nz-input readonly formControlName="organName" #orgUnit />
+                </nz-input-group>
+              </nz-form-control>
+              <ng-template #IconAdd>
+                <i nz-icon nzType="plus-circle" class="org-icon" nzTheme="outline" (click)="add()"></i>
+              </ng-template>
+              <ng-template #IconLow>
+                <i nz-icon nzType="close" class="org-icon" nzTheme="outline" (click)="clear()"></i>
+              </ng-template>
+            </div>
+          </nz-form-item>
+        </div>
+      </ng-container>
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <span class="are-require"></span>
+          <label>职位编码</label>
+          <div class="form-grup">
+            <nz-form-control>
+              <input nz-input placeholder="" formControlName="code" />
+            </nz-form-control>
+          </div>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <span class="are-require"></span>
+          <label>职位名称</label>
+          <div class="form-grup">
+            <nz-form-control>
+              <input nz-input placeholder="" formControlName="name" />
+            </nz-form-control>
+          </div>
+        </nz-form-item>
+      </div>
+      <ng-container *ngIf='isRelated'>
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <span class="are-require"></span>
+            <label>主管职位</label>
+            <div class="form-grup">
+              <nz-form-control>
+                <nz-select formControlName="isSupervisor">
+                  <nz-option *ngFor="let option of isisSupervisorOptions" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </div>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <span class="are-require"></span>
+            <label>上级职位</label>
+            <div class="form-grup">
+              <nz-form-control nzErrorTip="上级职位不能为空">
+                <nz-input-group [nzSuffix]="positionUnit.value ? IconClose : IconAdd">
+                  <input type="text" nz-input readonly formControlName="superiorName" #positionUnit />
+                </nz-input-group>
+              </nz-form-control>
+              <ng-template #IconAdd>
+                <i nz-icon nzType="plus-circle" class="org-icon" nzTheme="outline" (click)="addSuperiorPosition()"></i>
+              </ng-template>
+              <ng-template #IconClose>
+                <i nz-icon nzType="close" class="org-icon" nzTheme="outline" (click)="clearSelected()"></i>
+              </ng-template>
+            </div>
+
+          </nz-form-item>
+        </div>
+      </ng-container>
+      <div nz-col [nzSpan]="12">
+        <nz-form-item>
+          <span class="are-require">*</span>
+          <label>职位状态</label>
+          <div class="form-grup">
+            <nz-form-control>
+              <nz-select formControlName="status">
+                <nz-option *ngFor="let option of positionStatusOptions" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </div>
+        </nz-form-item>
+      </div>
+<!--      <div nz-col [nzSpan]="12">-->
+<!--        <nz-form-item>-->
+<!--          <span class="are-require"></span>-->
+<!--          <label>自定义字段</label>-->
+<!--          <div class="form-grup">-->
+<!--            <nz-form-control>-->
+<!--              <input nz-input placeholder="" formControlName="customField" />-->
+<!--            </nz-form-control>-->
+<!--          </div>-->
+<!--        </nz-form-item>-->
+<!--      </div>-->
+      <div nz-col [nzSpan]="24">
+        <nz-form-item>
+          <span class="are-require"></span>
+          <label>职位说明</label>
+          <div class="form-grup">
+            <nz-form-control>
+              <textarea formControlName="description" nz-input rows="4" placeholder="说点什么吧"></textarea>
+            </nz-form-control>
+          </div>
+        </nz-form-item>
+      </div>
+    </div>
+  </form>
+  <div class="footer">
+    <button nzType="primary" nz-button (click)="savePosition()" [disabled]="!validateForm.valid">保存</button>
+    <button nzType="primary" nz-button nzGhost host-button (click)="doCancel()">取消</button>
+  </div>
+</div>
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="选择所属组织"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzMaskClosable]="false"
+>
+  <div class="tree-warp">
+    <app-custom-tree style="max-height: 100%;" [nodeOpts]="nodeOpts" (node)="getCurrentNode($event)"  [expandAll]="true"></app-custom-tree>
+  </div>
+</nz-modal>
+<nz-modal
+  [(nzVisible)]="superiorIsVisible"
+  nzTitle="职位选择"
+  [nzWidth]='1000'
+  (nzOnOk)="handleSuperiorOk()"
+  (nzOnCancel)="handleSuperiorCancel()"
+  [nzMaskClosable]="false"
+  [nzClassName]="'position-modal-box'"
+>
+  <div class="modal-employee">
+    <div class="left">
+      <div class="tree-warp">
+        <app-custom-tree style="max-height: 100%;" [nodeOpts]="nodeOpts" (node)="getNodeInfo($event)"></app-custom-tree>
+      </div>
+    </div>
+    <div class="right">
+      <div class="search-form">
+        <form nz-form  class="ant-advanced-search-form">
+          <div nz-row [nzGutter]="24">
+            <nz-form-item>
+              <nz-form-label [nzSpan]="4" style='margin-top: 24px'>职位名称</nz-form-label>
+              <nz-form-control [nzSpan]="8" style='margin-top: 24px'>
+                <input nz-input [(ngModel)]='name' placeholder="" name='name'/>
+              </nz-form-control>
+              <nz-form-control [nzSpan]="8" style='margin-top: 24px;margin-left: 10px'>
+                <button nz-button nzType="link" (click)='queryPosition()'>查询</button>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </form>
+      </div>
+      <div class="employee-table-warp">
+        <div class="sv-panel-body">
+          <nz-table
+            #basicTable
+            class="table-theme-default quit-style"
+            [nzData]="tableData"
+            [nzLoading]="false"
+            [nzShowPagination]="false"
+            [nzPageSize]="pagesize"
+            [nzScroll]=" { y: '260px' }"
+          >
+            <thead>
+            <tr>
+              <th nzWidth="60px"></th>
+              <th nzWidth="120px">职位编码</th>
+              <th nzWidth="160px">职位名称</th>
+              <th nzWidth="160px">上级职位</th>
+              <th nzWidth="160px">所属部门</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let dat of basicTable.data; index as i">
+              <td> <label nz-radio [(ngModel)]="dat.isSelected" (ngModelChange)='changeRadio(i,dat)'></label></td>
+              <td>{{ dat.code }}</td>
+              <td>{{ dat.name }}</td>
+              <td>{{ dat.superior?.name }}</td>
+              <td>{{ dat.organization }}</td>
+            </tr>
+            </tbody>
+          </nz-table>
+        </div>
+        <div class="sv-panel-footer special-footer" *ngIf="tableData.length && pageState === 3">
+          <vx-pagination
+            [totalCount]="totalcount"
+            [(pageIndex)]="pageindex"
+            [(pageSize)]="pagesize"
+            (pageSizeChange)="pageSizeChange($event)"
+            (pageIndexChange)="pageIndexChange($event)"
+          >
+          </vx-pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</nz-modal>

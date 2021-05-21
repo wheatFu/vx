@@ -22,7 +22,7 @@ scripts/var.less
 *.sublime-workspace
 
 # IDE - VSCode
-# .vscode/*
+.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -45,3 +45,5 @@ yarn-error.log
 # System Files
 .DS_Store
 Thumbs.db
+.vscode/settings.json
+.vscode/settings.json

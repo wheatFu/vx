@@ -3,11 +3,18 @@
   "en": "英",
   "menu": {
     "hcm": {
-      "main": "首页",
-      "ga": "归集提取",
-      "loan": "综合贷款",
-      "crm": "综合服务",
-      "outreach": "外联平台"
+      "home": "首页",
+      "organization": "组织管理",
+      "organization info": "组织信息",
+      "organization change": "组织变动查询",
+      "position": "职位管理",
+      "position info": "职位信息",
+      "position dict": "职位字典",
+      "hr": "人事管理",
+      "entry": "入职管理",
+      "on the job": "在职员工管理",
+      "dimission": "离职员工管理",
+      "history": "离职员工管理"
     }
   },
   "app": {
@@ -16,6 +23,8 @@
       "logout": "退出"
     },
     "common": {
+      "DISABLE": "已禁用",
+      "ENABLE": "已启用",
       "no data": "暂无数据",
       "Drag and drop into the area": "拖拽到该区域",
       "Confirm": "确定",

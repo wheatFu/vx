@@ -1,0 +1,115 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    <a [routerLink]="redirectUrl">组织信息</a>
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    {{ optTitle }}
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<div class="form-warp">
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <ng-container *ngIf="!this.orgRoot">
+        <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">
+          上级组织单元
+        </nz-form-label>
+        <nz-form-control [nzSpan]="9" nzErrorTip="上级组织单元不能为空">
+          <nz-input-group [nzSuffix]="orgUnit.value ? IconLow : IconAdd">
+            <input type="text" nz-input readonly formControlName="parentName" #orgUnit />
+          </nz-input-group>
+          <ng-template #IconAdd>
+            <i nz-icon nzType="plus-circle" class="org-icon" nzTheme="outline" (click)="add()"></i>
+          </ng-template>
+          <ng-template #IconLow>
+            <i nz-icon nzType="close" class="org-icon" nzTheme="outline" (click)="clear()"></i>
+          </ng-template>
+        </nz-form-control>
+      </ng-container>
+
+      <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">组织编码</nz-form-label>
+      <nz-form-control [nzSpan]="9" nzErrorTip="组织编码不能为空">
+        <input nz-input placeholder="" formControlName="code" />
+      </nz-form-control>
+
+      <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">组织名称</nz-form-label>
+      <nz-form-control [nzSpan]="9" nzErrorTip="组织名称不能为空">
+        <input nz-input placeholder="" formControlName="name" />
+      </nz-form-control>
+
+      <nz-form-label [nzSpan]="3" [nzNoColon]="true">组织层级</nz-form-label>
+      <nz-form-control [nzSpan]="9">
+        <input nz-input placeholder="" formControlName="hierarchy" />
+      </nz-form-control>
+
+      <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">组织类型</nz-form-label>
+      <nz-form-control [nzSpan]="9" nzErrorTip="组织状态不能为空">
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择组织类型" formControlName="type">
+          <nz-option *ngFor="let item of type" [nzValue]="item.id" [nzLabel]="item.name"></nz-option>
+        </nz-select>
+      </nz-form-control>
+
+      <ng-container *ngIf="operat === 'add'">
+        <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">组织状态</nz-form-label>
+        <nz-form-control [nzSpan]="9" nzErrorTip="组织状态不能为空">
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择组织状态" formControlName="status">
+            <nz-option *ngFor="let item of status" [nzValue]="item.state" [nzLabel]="item.name"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </ng-container>
+
+      <nz-form-label [nzSpan]="3" [nzNoColon]="true">组织地区</nz-form-label>
+      <nz-form-control [nzSpan]="9">
+        <input nz-input placeholder="" formControlName="region" />
+      </nz-form-control>
+
+      <ng-container *ngIf="operat !== 'edit'">
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true">生效日期</nz-form-label>
+        <nz-form-control [nzSpan]="9">
+          <nz-date-picker formControlName="effectiveDate" [nzAllowClear]="false"></nz-date-picker>
+        </nz-form-control>
+      </ng-container>
+
+      <ng-container *ngIf="operat == 'edit'">
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true">生效日期</nz-form-label>
+        <nz-form-control [nzSpan]="9">
+          {{ sydate | date: 'yyyy/MM/dd HH:mm:ss' }}
+        </nz-form-control>
+      </ng-container>
+    </nz-form-item>
+    <nz-divider nzPlain></nz-divider>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="3" [nzNoColon]="true">操作人</nz-form-label>
+      <nz-form-control [nzSpan]="9">
+        {{ username }}
+      </nz-form-control>
+
+      <nz-form-label [nzSpan]="3" [nzNoColon]="true">操作日期</nz-form-label>
+      <nz-form-control [nzSpan]="9">
+        {{ sydate | date: 'yyyy/MM/dd HH:mm:ss' }}
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+  <div class="footer">
+    <button nzType="primary" nz-button (click)="saveOrg()" [nzLoading]="http.loading">保存</button>
+    <button nzType="primary" nz-button nzGhost host-button (click)="doCancel()">取消</button>
+  </div>
+</div>
+
+<nz-modal
+  class="org-modal"
+  [(nzVisible)]="isVisible"
+  nzTitle="选择上级单元组织"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzMaskClosable]="false"
+>
+  <div class="modal-tree-warp">
+    <app-custom-tree
+      style="max-height: 100%;"
+      [nodeOpts]="nodeOpts"
+      [expandAll]="false"
+      (node)="getCurrentNode($event)"
+    ></app-custom-tree>
+  </div>
+</nz-modal>

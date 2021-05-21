@@ -1,5 +1,5 @@
 import { MenuService, SettingsService, _HttpClient } from '@knz/theme'
-import { Component, OnDestroy, Inject, Optional } from '@angular/core'
+import { Component, OnDestroy, Inject, Optional, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'
 import { NzMessageService, NzModalService } from 'ng-zorro-antd'
@@ -7,6 +7,9 @@ import { SocialService, SocialOpenType, ITokenService, DA_SERVICE_TOKEN } from '
 import { ReuseTabService } from '@knz/assembly'
 import { environment } from '@env/environment'
 import { StartupService } from '@core'
+import { map, mergeMap, tap, filter } from 'rxjs/operators'
+import { AuthService } from '@core/auth.service'
+import { ReferTokenService } from '@core/refer-token.service'
 
 @Component({
   selector: 'app-login',
@@ -14,7 +17,7 @@ import { StartupService } from '@core'
   styleUrls: ['./index.component.less'],
   providers: [SocialService],
 })
-export class LoginComponent implements OnDestroy {
+export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     fb: FormBuilder,
     modalSrv: NzModalService,
@@ -25,8 +28,11 @@ export class LoginComponent implements OnDestroy {
     @Inject(ReuseTabService)
     private reuseTabService: ReuseTabService,
     private menuService: MenuService,
+    private authService: AuthService,
+
     @Inject(DA_SERVICE_TOKEN) private tokenService: ITokenService,
     private startupSrv: StartupService,
+    private refTokenSrv: ReferTokenService,
     public http: _HttpClient,
     public msg: NzMessageService,
   ) {
@@ -64,6 +70,10 @@ export class LoginComponent implements OnDestroy {
   interval$: any
 
   // #endregion
+
+  ngOnInit(): void {
+    this.refTokenSrv.clearTokensData()
+  }
 
   switch(ret: any) {
     this.type = ret.index
@@ -107,34 +117,65 @@ export class LoginComponent implements OnDestroy {
     }
 
     this.http
-      .post('/login/account?_allow_anonymous=true', {
+      .post('/auth/login', {
+        loginName: 'vxcore',
         type: this.type,
-        userName: this.userName.value,
+        username: this.userName.value,
         password: this.password.value,
+        productCode: 'PLATFORM',
       })
-      .subscribe((res: any) => {
-        if (res.msg !== 'ok') {
-          this.error = res.msg
-          return
-        }
-        // 清空路由复用信息
-        this.reuseTabService.clear()
-        // 设置用户Token信息
-        this.tokenService.set(res.user)
-        // 重新获取 StartupService 内容，我们始终认为应用信息一般都会受当前用户授权范围而影响
-        this.startupSrv.load().then(() => {
-          this.menuService.add(res.menu)
-          let url = this.tokenService.referrer!.url || '/'
-          if (url.includes('/passport')) {
-            url = '/'
+      .pipe(
+        tap(res => {
+          if (+res.result.code !== 0) {
+            throw new Error(res.result.message || '登录失败')
           }
-          this.router.navigateByUrl(url)
-        })
-      })
+        }),
+        map((res: any) => res.data!),
+        tap(res => {
+          this.tokenService.set(res)
+          this.refTokenSrv.setTokensLastModified()
+        }),
+        mergeMap(() => this.getSelfInfo()),
+      )
+      .subscribe(
+        res => {
+          if (res.result.code === 0) {
+            const { data, dataConfig } = res
+            // 清空路由复用信息
+            this.reuseTabService.clear()
+
+            const userInfo = data.isAdmin ? { name: data.name } : data.employee
+            this.settingsService.setUser(userInfo) // 简单用户信息{user: xxx}
+            this.authService.setUserInfo(data) // 中台common用户信息
+            this.authService.setSelectData(dataConfig)
+
+            let url = this.tokenService.referrer!.url || '/'
+            if (url.includes('/passport')) {
+              url = '/'
+            }
+            this.router.navigateByUrl(url)
+          } else {
+            this.msg.error(res.result.message)
+          }
+          // this.menuService.add(SIDEBAR_MENU_DATA.menu[0].children)
+          // 重新获取 StartupService 内容，我们始终认为应用信息一般都会受当前用户授权范围而影响
+          // this.startupSrv.load().then(() => {})
+        },
+        err => {
+          this.msg.error(err)
+        },
+      )
+  }
+
+  /**
+   * 获取用户信息
+   */
+  getSelfInfo() {
+    const url = '/organization/employee/getSelfInfoV2'
+    return this.http.get(url)
   }
 
   // #endregion
-
   ngOnDestroy(): void {
     if (this.interval$) {
       clearInterval(this.interval$)

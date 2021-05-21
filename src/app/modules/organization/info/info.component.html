@@ -1,0 +1,157 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    组织信息
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<div class="main">
+  <div class="left">
+    <div class="layout">
+      <span>显示层级</span>
+      <nz-select [nzDropdownMatchSelectWidth]="false" [(ngModel)]="levelCount">
+        <nz-option *ngFor="let item of list" [nzValue]="item.value" [nzLabel]="item.label"> </nz-option>
+      </nz-select>
+    </div>
+    <div class="tree-warp">
+      <div class="tree-spin" *ngIf="treeloading; else content">
+        <nz-spin nzSimple></nz-spin>
+      </div>
+      <ng-template #content>
+        <app-custom-tree
+          style="max-height: 100%;"
+          [nodeOpts]="nodeOpts"
+          [expandAll]="true"
+          (node)="getCurrentNode($event)"
+        ></app-custom-tree>
+      </ng-template>
+    </div>
+  </div>
+  <div class="right" [style.background]="'inherit'">
+    <div class="right-top">
+      <div class="right-menu">
+        <nz-input-group [nzSuffix]="suffixIconSearch" nzSearch>
+          <input type="text" nz-input placeholder="查询" (keyup.enter)="handleInputKeyup()" [(ngModel)]="query" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <span class="icon-ic_search" nzSearch (click)="handleInputKeyup()" style="cursor: pointer;"></span>
+        </ng-template>
+        <span class="query" *ngIf="false">高级查询</span>
+      </div>
+      <div class="right-setting">
+        <button nzType="primary" nz-button [routerLink]="['/organization/edit']" [queryParams]="{ type: 'add' }">
+          <span class="custom-icon icon-ic_add"></span>新建
+        </button>
+        <button nzType="primary" nz-button nzGhost host-button (click)="exportOrganList()">
+          <span class="custom-icon icon-ic_export"></span>导出
+        </button>
+        <button nzType="primary" nz-button nzGhost host-button [routerLink]="['/organization/noteffect']">
+          <span class="custom-icon icon-ic_Assessment"></span>查看未生效组织
+        </button>
+        <button nzType="primary" nz-button nzGhost host-button *ngIf="false">
+          <span class="custom-icon icon-ic_setting"></span>
+          表格设置
+        </button>
+        <!-- (ngModelChange)="changeUI($event)" -->
+        <nz-radio-group nzButtonStyle="solid" class="btn-radio" [(ngModel)]="toggleUI">
+          <label nz-radio-button nzValue="A"
+            ><span class="icon-ic_card_danxuan "
+              ><span class="path1"></span><span class="path2"></span><span class="path3"></span
+              ><span class="path4"></span><span class="path5"></span><span class="path6"></span></span
+          ></label>
+          <label nz-radio-button nzValue="B"><span class="icon-ic_MindMap_verticel"></span></label>
+        </nz-radio-group>
+      </div>
+    </div>
+
+    <!-- table -->
+    <div class="table-warp" *ngIf="toggleUI === 'A'" #tableWarp>
+      <ng-container *ngIf="pageState != 3">
+        <div class="empty">
+          <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
+          <div class="empty-img" *ngIf="pageState == 2"></div>
+        </div>
+      </ng-container>
+      <div class="sv-panel-body" *ngIf="pageState === 3">
+        <nz-table
+          #basicTable
+          class="table-theme-default quit-style"
+          [nzData]="listdata"
+          [nzLoading]="false"
+          [nzShowPagination]="false"
+          [nzPageSize]="pagesize"
+          [nzScroll]="tableScroll"
+        >
+          <thead>
+            <tr>
+              <th nzWidth="65px">序号</th>
+              <th nzWidth="120px">组织编码</th>
+              <th nzWidth="160px">组织名称</th>
+              <th nzWidth="100px">组织类型</th>
+              <th nzWidth="120px">组织状态</th>
+              <th nzWidth="80px">职位数</th>
+              <th nzWidth="125px">在职员工数</th>
+              <th nzWidth="280px" style="min-width: 280px;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dat of basicTable.data; index as i">
+              <td nzBreakWord>{{ i + 1 }}</td>
+              <td nzBreakWord>{{ dat.code }}</td>
+              <td nzBreakWord>{{ dat.name }}</td>
+              <td nzBreakWord>{{ org_type[dat.type] }}</td>
+              <td nzBreakWord>
+                <span ngClass="status status_{{ dat.status }}">已{{ dat.status | orgState }}</span>
+              </td>
+              <td nzBreakWord>
+                <a nz-button nzType="link" (click)="showListMoadl(1, dat.id)">{{ dat.positionNum }}</a>
+              </td>
+              <td nzBreakWord>
+                <a nz-button nzType="link" (click)="showListMoadl(2, dat.id)">{{ dat.employeeNum }}</a>
+              </td>
+              <td style="min-width: 280px;">
+                <div class="btn-td-operat-group">
+                  <!-- disabled -->
+                  <a
+                    nz-button
+                    nzType="link"
+                    [attr.disabled]="dat.status === 'DISABLE' ? true : null"
+                    [routerLink]="['/organization/edit']"
+                    [queryParams]="{ type: 'edit', id: dat.id }"
+                    >编辑</a
+                  >
+                  <a
+                    nz-button
+                    nzType="link"
+                    [routerLink]="['/organization/edit']"
+                    [queryParams]="{ type: 'change', id: dat.id }"
+                    >变更</a
+                  >
+                  <a nz-button nzType="link" [routerLink]="['/organization/merge/', dat.id]">合并</a>
+                  <a nz-button nzType="link" (click)="showEnablefirm(dat)">{{
+                    dat.status === 'DISABLE' ? '启用' : '禁用'
+                  }}</a>
+                  <a nz-button nzType="link" [routerLink]="['/organization/change-history/', dat.id]">变更历史</a>
+                  <a nz-button nzType="link" class="del" (click)="showConfirm(dat.id)">删除</a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+      <div class="sv-panel-footer" *ngIf="listdata.length && pageState === 3">
+        <vx-pagination
+          [totalCount]="totalcount"
+          [(pageIndex)]="pageindex"
+          [(pageSize)]="pagesize"
+          (pageSizeChange)="pageSizeChange($event)"
+          (pageIndexChange)="pageIndexChange($event)"
+        >
+        </vx-pagination>
+      </div>
+    </div>
+
+    <div class="mind-warp" *ngIf="toggleUI === 'B'">
+      <app-org-graph style="height:100%;" [explandLevel]="levelCount" [data]="graphSource"></app-org-graph>
+    </div>
+  </div>
+</div>

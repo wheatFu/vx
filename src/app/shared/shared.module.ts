@@ -8,6 +8,9 @@ import { KNZAssemblyModule } from '@knz/assembly'
 import { KNZChartModule } from '@knz/chart'
 import { KNZRoleModule } from '@knz/role'
 import { KNZFormModule } from '@knz/form'
+
+// 中台统一组件
+import { KnxVuiModule } from 'knx-vui'
 // i18n
 import { TranslateModule } from '@ngx-translate/core'
 
@@ -16,6 +19,8 @@ import { NgZorroAntdModule } from 'ng-zorro-antd'
 import { CountdownModule } from 'ngx-countdown'
 import { UEditorModule } from 'ngx-ueditor'
 import { NgxTinymceModule } from 'ngx-tinymce'
+import { SharedComponentsModule } from './components/components.module'
+import { OrgStatePipe, OrgChangeTypePipe, BoolePipePipe } from './pipes/index'
 
 const COMPONENTS_Chart = []
 
@@ -28,7 +33,7 @@ const COMPONENTS = []
 const DIRECTIVES = []
 // #endregion
 
-const PIPES = []
+const PIPES = [OrgStatePipe, OrgChangeTypePipe, BoolePipePipe]
 
 @NgModule({
   imports: [
@@ -41,6 +46,8 @@ const PIPES = []
     KNZChartModule,
     KNZRoleModule,
     KNZFormModule,
+    SharedComponentsModule,
+    KnxVuiModule,
     ...THIRDMODULES,
   ],
   declarations: [...COMPONENTS, ...DIRECTIVES, ...PIPES, ...COMPONENTS_Chart],
@@ -55,6 +62,8 @@ const PIPES = []
     KNZRoleModule,
     KNZFormModule,
     TranslateModule,
+    SharedComponentsModule,
+    KnxVuiModule,
     ...THIRDMODULES,
     ...COMPONENTS,
     ...DIRECTIVES,

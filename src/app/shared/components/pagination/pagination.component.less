@@ -1,0 +1,105 @@
+::ng-deep {
+  .os-pagination {
+    @pagination-active-color: #6e8ae5;
+    @pagination-height: 32px;
+
+    display: flex;
+    padding-top: 15px;
+    min-height: 47px;
+
+    nz-pagination ::ng-deep {
+      display: inline-block;
+      text-align: right;
+      flex: 1;
+
+      .ant-select {
+        height: @pagination-height;
+        color: @pagination-active-color;
+
+        .ant-select-selection {
+          width: 94px;
+          height: @pagination-height;
+          border-radius: 0;
+          background-color: #ffffff;
+
+          &__rendered {
+            line-height: @pagination-height - 2px; // 减去 boder 的 2px
+          }
+
+          .ant-select-arrow::before {
+            border-top-color: @pagination-active-color;
+          }
+        }
+      }
+
+      .ant-pagination {
+        margin-top: 0 !important;
+
+        &-item {
+          border-radius: 0;
+
+          a {
+            color: @pagination-active-color;
+          }
+
+          &-active {
+            background-color: @pagination-active-color;
+
+            a {
+              color: #ffffff;
+            }
+          }
+        }
+
+        &-prev,
+        &-next {
+          border-radius: 0;
+
+          a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0;
+            color: @pagination-active-color;
+
+            // #region 修改翻页单箭头为双箭头 step 1
+            i {
+              height: 100%;
+              font-size: 14px;
+              line-height: 28px;
+            }
+
+            svg {
+              display: none;
+            }
+            // #endregion
+          }
+        }
+
+        &-disabled a {
+          color: #dddddd;
+        }
+
+        // #region 修改 翻页单箭头为双箭头 step 2
+        &-prev i::after {
+          content: '«';
+        }
+
+        &-next i::after {
+          content: '»';
+        }
+        // #endregion
+      }
+    }
+
+    &-total {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 21px;
+      border: 1px solid #dddddd;
+      color: @pagination-active-color;
+      background-color: #ffffff;
+    }
+  }
+}

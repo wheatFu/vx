@@ -1,0 +1,82 @@
+@import '~ng-zorro-antd/style/themes/default';
+// scrollbar
+@scrollbar-enabled: true;
+@scrollbar-width: 6px;
+@scrollbar-height: 6px;
+@scrollbar-track-color: transparent;
+@scrollbar-thumb-color: #c7e7f3;
+@scrollbar-table-enabled: false;
+
+.scrollbar-mixin(@element-name) {
+  .scrollbar-inner-mixin(@enabled) when(@enabled=true) {
+    @{element-name} {
+      // FireFox
+      scrollbar-color: @scrollbar-thumb-color @scrollbar-track-color;
+      scrollbar-width: thin;
+      // Other
+      &::-webkit-scrollbar {
+        width: @scrollbar-height;
+        height: @scrollbar-width;
+      }
+      &::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 @scrollbar-width @scrollbar-track-color;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: @scrollbar-thumb-color;
+        outline: 1px solid #333;
+        border-radius: @scrollbar-width;
+      }
+    }
+  }
+  .scrollbar-inner-mixin(@scrollbar-enabled);
+}
+
+// 自定义div scrollbar
+@scrollbar-prefix: ~'.scrollbar';
+@{scrollbar-prefix} {
+  overflow: auto;
+
+  &-x {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  &-y {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+}
+
+.ps__rail {
+  &-x,
+  &-y {
+    display: none;
+  }
+}
+
+// scrollbar
+.scrollbar-mixin(~'textarea.@{ant-prefix}-input');
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c7e7f3 #eee;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background-color: #eee;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  transition: background-color 0.2s linear, width 0.2s ease-in-out;
+  background-color: #c7e7f3;
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+}

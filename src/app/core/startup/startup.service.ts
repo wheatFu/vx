@@ -10,6 +10,7 @@ import { I18NService } from '../i18n/i18n.service'
 import { NzIconService } from 'ng-zorro-antd'
 import { ICONS_AUTO } from '../../../style-icons-auto'
 import { ICONS } from '../../../style-icons'
+import { AuthService } from '@core/auth.service'
 
 /**
  * 用于应用启动时
@@ -25,6 +26,7 @@ export class StartupService {
     private settingService: SettingsService,
     private roleService: RoleService,
     private titleService: TitleService,
+    private authSrv: AuthService,
     private httpClient: HttpClient,
   ) {
     iconSrv.addIcon(...ICONS_AUTO, ...ICONS)
@@ -67,12 +69,19 @@ export class StartupService {
             const res: any = appData
             // 应用信息：包括站点名、描述、年份
             this.settingService.setApp(res.app)
-            // 用户信息：包括姓名、头像、邮箱地址
-            this.settingService.setUser(res.user)
+            const userinfo = this.authSrv.getUserInfo()
+
+            if (Object.keys(userinfo).length) {
+              // 用户信息：包括姓名、头像、邮箱地址
+              this.settingService.setUser(userinfo)
+            }
+
             // Role：设置权限为全量
             this.roleService.setFull(true)
-            // 初始化菜单
+            // 初始化菜单 -登录后初始化
+
             this.menuService.add(res.menu)
+
             // 设置页面标题的后缀
             this.titleService.default = ''
             this.titleService.suffix = res.app.name

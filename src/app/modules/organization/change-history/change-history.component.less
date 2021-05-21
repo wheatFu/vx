@@ -1,0 +1,143 @@
+/************ search类 后期可写成组件 ***************/
+
+nz-collapse {
+  box-shadow: rgba(96, 113, 223, 0.12) 0px 0px 10px;
+  border-radius: 2px;
+  ::ng-deep {
+    .ant-collapse-borderless > .ant-collapse-item,
+    .ant-collapse-item {
+      border-bottom: 0;
+    }
+  }
+}
+.table-search-panel {
+  background-color: #ffffff;
+  border-radius: 2px;
+}
+::ng-deep {
+  .ant-collapse-header {
+    font-size: 18px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: #818182;
+    background: #ffffff;
+    box-shadow: 0px 4px 8px 0px rgba(96, 113, 223, 0.12);
+    border-radius: 2px;
+
+    .ant-collapse-extra {
+      font-size: 15px;
+      color: #9ba1b5;
+    }
+  }
+  .table-search-form {
+    padding-top: 20px;
+    .ant-calendar-picker {
+      width: 100%;
+    }
+    .ant-form-item-label > label::after {
+      margin-right: 15px;
+    }
+  }
+}
+
+.table-search-icon {
+  color: #9ba1b5;
+  user-select: none;
+}
+
+.table-search-icon-text {
+  margin-left: 5px;
+  color: #9ba1b5;
+  user-select: none;
+}
+
+.table-search-buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-content: flex-end;
+}
+.table-search-submit {
+  display: inline-block;
+  width: 71px;
+  height: 36px;
+  border: 0 none;
+  outline: 0 none;
+  background: linear-gradient(90deg, #6272d9 0%, #6e8be5 100%);
+  box-shadow: 0 2px 6px 0 rgba(110, 139, 229, 0.7);
+  border-radius: 3px;
+  color: #ffffff;
+  cursor: pointer;
+  transition: opacity 200ms ease-in-out;
+}
+
+.table-search-submit:hover {
+  opacity: 0.8;
+}
+
+/************ search类end 后期可写成组件 ***************/
+
+::ng-deep {
+  .btn-group-right {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    .alone-icon {
+      color: #7491e7;
+      font-size: 19px;
+    }
+    .alone-icon-warp {
+      transition: all 0.2s ease;
+      &:hover {
+        scale: 1.2;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+/******************* table  ********************/
+.table-warp {
+  margin-top: 15px;
+  height: calc(100% - 243px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+:host {
+  .empty {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    // background: #fff;
+    .empty-img {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      width: 583px;
+      height: 368px;
+      background: url(/assets/images/image-empty.png) no-repeat center;
+      &:lang(en) {
+        background: url(/assets/images/image-empty-en.png) no-repeat center;
+      }
+
+      &:lang(zh-CN) {
+        background: url(/assets/images/image-empty.png) no-repeat center;
+      }
+    }
+    nz-spin {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: auto;
+      width: 200px;
+      height: 100px;
+      text-align: center;
+    }
+  }
+}

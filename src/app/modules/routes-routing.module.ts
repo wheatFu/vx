@@ -8,8 +8,10 @@ import { LayoutPassportComponent } from '../layout/passport/passport.component'
 
 import { LoginComponent } from './auth/login/index.component'
 import { HomeComponent } from './home/home.component'
+import { KnxJumpingComponent } from 'knx-ngx/jumping'
 
 const routes: Routes = [
+  { path: 'jumping', component: KnxJumpingComponent },
   // 登录相关
   {
     path: 'auth',
@@ -32,8 +34,14 @@ const routes: Routes = [
       { path: 'index', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent, data: { title: '首页', titleI18n: '首页' } },
       {
-        path: 'ga',
-        loadChildren: () => import('./ga/ga.module').then(m => m.GaModule),
+        path: 'organization', // 组织管理
+        loadChildren: () => import('./organization/organization.module').then(m => m.OrganizationModule),
+      },
+      {
+        path: 'position',
+        // 路由懒加载
+        loadChildren: () =>
+          import('./position-management/position-management.module').then(m => m.PositionManagementModule),
       },
     ],
   },

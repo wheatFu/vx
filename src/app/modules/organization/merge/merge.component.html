@@ -1,0 +1,134 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    <a [routerLink]="redirectUrl">组织信息</a>
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>组织合并 </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<div class="merge">
+  <!-- btn -->
+  <div class="btn-group-right">
+    <button nzType="primary" nz-button (click)="addOrg()"><span class="custom-icon icon-ic_add"></span>新增</button>
+  </div>
+
+  <div class="merge-org">
+    <div class="title">合并组织</div>
+    <div class="block">
+      <div class="table-spin" *ngIf="loading; else content">
+        <nz-spin nzSimple></nz-spin>
+      </div>
+      <ng-template #content>
+        <div class="sv-panel-body">
+          <nz-table
+            #orgTable
+            class="table-theme-default quit-style"
+            [nzData]="listOrg"
+            [nzLoading]="loading"
+            [nzShowPagination]="false"
+            [nzPageSize]="999"
+            [nzScroll]="{ y: '166px' }"
+          >
+            <thead>
+              <tr>
+                <th nzWidth="60px">序号</th>
+                <th nzWidth="120px">组织编码</th>
+                <th nzWidth="160px">合并组织名称</th>
+                <th nzWidth="160px">上级组织名称</th>
+                <th nzWidth="120px">合并后组织</th>
+                <th nzWidth="120px">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let dat of orgTable.data; index as i">
+                <td>{{ i + 1 }}</td>
+                <td>{{ dat?.code }}</td>
+                <td>{{ dat?.name }}</td>
+                <td>{{ dat?.superior?.name }}</td>
+                <td>{{ dat?.mergeMain }}</td>
+                <td>
+                  <div class="btn-td-operat-group">
+                    <a nz-button nzType="link" class="del" *ngIf="!dat?.mergeMain" (click)="delLocal(dat.id)">删除</a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  <div class="merge-position">
+    <div class="title">主要职位</div>
+    <div class="block">
+      <div class="table-spin" *ngIf="loading">
+        <nz-spin nzSimple></nz-spin>
+      </div>
+      <ng-container *ngIf="!loading">
+        <div class="sv-panel-body">
+          <nz-table
+            #posTable
+            class="table-theme-default quit-style"
+            [nzData]="listPos"
+            [nzLoading]="loading"
+            [nzShowPagination]="false"
+            [nzPageSize]="999"
+            [nzScroll]="{ y: '166px' }"
+          >
+            <thead>
+              <tr>
+                <th nzWidth="60px">序号</th>
+                <th nzWidth="120px">职位编码</th>
+                <th nzWidth="160px">职位名称</th>
+                <th nzWidth="160px">原所属组织</th>
+                <th nzWidth="120px">是否主管</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let dat of posTable.data; index as i">
+                <td>{{ i + 1 }}</td>
+                <td>{{ dat?.code }}</td>
+                <td>{{ dat?.name }}</td>
+                <td>{{ dat?.organizationName }}</td>
+                <td>
+                  <nz-switch [(ngModel)]="dat.isSupervisor" nzCheckedChildren="是" nzUnCheckedChildren="否"></nz-switch>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="merge-info">
+    <form>
+      <nz-form-item>
+        <!--   -->
+        <nz-form-label [nzSpan]="2" [nzNoColon]="true" nzRequired>生效日期</nz-form-label>
+        <nz-form-control [nzXs]="{ span: 5 }" [nzXXl]="{ span: 3 }" nzErrorTip="生效日期必选">
+          <nz-date-picker
+            [(ngModel)]="effectiveDate"
+            name="effectiveDate"
+            [nzAllowClear]="false"
+            required
+          ></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-divider nzPlain></nz-divider>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="2" [nzNoColon]="true">操作人</nz-form-label>
+        <nz-form-control [nzSpan]="9">
+          {{ username }}
+        </nz-form-control>
+
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true">操作日期</nz-form-label>
+        <nz-form-control [nzSpan]="9">
+          {{ sydate | date: 'yyyy/MM/dd HH:mm:ss' }}
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+    <div class="footer">
+      <button nzType="primary" nz-button (click)="mergeOrg()" [nzLoading]="http.loading">保存</button>
+      <button nzType="primary" nz-button nzGhost host-button [routerLink]="redirectUrl">取消</button>
+    </div>
+  </div>
+</div>

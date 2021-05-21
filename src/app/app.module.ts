@@ -13,6 +13,9 @@ import { DELON_LOCALE, zh_CN as vxLang, KNZ_I18N_TOKEN } from '@knz/theme'
 import { SimpleInterceptor } from '@knz/auth'
 import { DefaultInterceptor, StartupService, I18NService } from '@core'
 
+import { KnxJumpingModule } from 'knx-ngx/jumping'
+import { routeIdMap } from './constants/menu/route-id-map.constant'
+
 const LANG = {
   abbr: 'zh',
   ng: ngLang,
@@ -83,6 +86,7 @@ import { LayoutModule } from './layout/layout.module'
     SharedModule,
     LayoutModule,
     RoutesModule,
+    KnxJumpingModule.forRoot({ routeIdMap }),
     ...I18NSERVICE_MODULES,
     ...GLOBAL_THIRD_MODULES,
     ...FORM_MODULES,

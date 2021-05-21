@@ -10,12 +10,18 @@
     * 录制 macros - save and reformat width prettier - 设置该macros的快捷键为 ctrl+s
 
 ## Mock Data 插件的引入
-    * 样例在coming-soon console.log()
+    * 样例在coming-soon console.log(1)
 
 ## 发布命令
 
- ``` bash
- ng build --prod --base-href /Pages/NewSY/
+ ``` bash-local
+ ng build --base-href /vx/
+ 
+ ``` bash-test
+ ng build --base-href /vx/ --configuration=test
+ 
+ ``` bash-product
+ ng build --prod --base-href /vx/
  ```
  
  ## 公用服务说明

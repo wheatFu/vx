@@ -1,9 +1,14 @@
- 
+import { Environment } from './types'
 
-export const environment = {
+export const environment: Environment = {
   SERVER_URL: `./`,
-  production: false,
-  useHash: true,
+  production: true,
   hmr: true,
-};
- 
+  useHash: false,
+  api: {
+    tokenExpiredTime: 5 * 59 * 1000,
+    refreTokenExpiredTime: 24 * 60 * 59 * 1000,
+    refreshTokenEnabled: true,
+    refreshTokenType: 'auth-refresh',
+  },
+}

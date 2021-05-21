@@ -1,0 +1,152 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    组织变动查询
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<div class="change-main">
+  <div class="top">
+    <div class="operation-box">
+      <button nzType="primary" nz-button nzGhost host-button (click)="exportChangeList()">
+        <span class="custom-icon icon-ic_export"></span>导出
+      </button>
+    </div>
+
+    <!-- 折叠search -->
+    <nz-collapse [nzBordered]="false">
+      <nz-collapse-panel
+        class="table-search-panel"
+        [nzHeader]="options.nzHeader"
+        [(nzActive)]="options.nzActive"
+        [nzShowArrow]="false"
+        [nzExtra]="extraTemplate"
+        (nzActiveChange)="initTableUI($event)"
+      >
+        <ng-template #extraTemplate>
+          <i
+            class="table-search-icon"
+            nz-icon
+            [nzType]="'up'"
+            [nzRotate]="options.nzActive ? 0 : 180"
+            (click)="options.nzActive = !options.nzActive"
+          ></i>
+          <span class="table-search-icon-text">{{ options.nzActive ? '收起' : '展开' }}</span>
+        </ng-template>
+
+        <form nz-form [formGroup]="validateForm" class="">
+          <nz-form-item>
+            <nz-form-label [nzSpan]="2" [nzNoColon]="true">组织名称</nz-form-label>
+            <nz-form-control [nzSpan]="6">
+              <input nz-input placeholder="" formControlName="organizationName" />
+            </nz-form-control>
+
+            <nz-form-label [nzSpan]="2" [nzNoColon]="true">变更类型</nz-form-label>
+            <nz-form-control [nzSpan]="6">
+              <nz-select formControlName="changeType" (click)="getChangeTypes()">
+                <nz-option
+                  *ngFor="let option of organizationUpdateTypes"
+                  [nzLabel]="option.label"
+                  [nzValue]="option.value"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+
+            <nz-form-label [nzSpan]="2" [nzNoColon]="true">操作人</nz-form-label>
+            <nz-form-control [nzSpan]="6">
+              <nz-select
+                nzPlaceHolder=""
+                nzAllowClear
+                nzShowSearch
+                nzServerSearch
+                formControlName="createBy"
+                (nzOnSearch)="onSearch($event)"
+              >
+                <ng-container *ngFor="let o of selectopts">
+                  <nz-option *ngIf="!selectLoading" [nzValue]="o.userId" [nzLabel]="o.name"></nz-option>
+                </ng-container>
+                <nz-option *ngIf="selectLoading" nzDisabled nzCustomContent>
+                  <i nz-icon nzType="loading" class="loading-icon"></i> 检索中...
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+
+            <nz-form-label [nzSpan]="2" [nzNoColon]="true">操作日期</nz-form-label>
+            <nz-form-control [nzSpan]="6">
+              <nz-range-picker formControlName="date"></nz-range-picker>
+            </nz-form-control>
+
+            <div nz-col [nzSpan]="2" class="table-search-buttons">
+              <button nz-button nzType="link" class="table-search-submit" (click)="queryUpdateHistory()">
+                查询
+              </button>
+            </div>
+          </nz-form-item>
+        </form>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </div>
+  <div class="table-warp">
+    <ng-container *ngIf="pageState != 3">
+      <div class="empty">
+        <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
+        <div class="empty-img" *ngIf="pageState == 2"></div>
+      </div>
+    </ng-container>
+    <div class="sv-panel-body" *ngIf="pageState === 3">
+      <nz-table
+        #basicTable
+        class="table-theme-default quit-style"
+        [nzData]="listdata"
+        [nzLoading]="false"
+        [nzShowPagination]="false"
+        [nzPageSize]="pagesize"
+        [nzScroll]="tableScroll"
+      >
+        <thead>
+          <tr>
+            <th nzWidth="60px">序号</th>
+            <th nzWidth="120px">组织编码</th>
+            <th nzWidth="160px">组织名称</th>
+            <th nzWidth="160px">变更类型</th>
+            <!-- <th nzWidth="100px">变更内容</th>
+            <th nzWidth="160px">变更前</th>
+            <th nzWidth="160px">变更后</th> -->
+            <th nzWidth="100px">操作人</th>
+            <th nzWidth="160px">操作时间</th>
+            <th nzWidth="160px">生效时间</th>
+            <th nzWidth="160px">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dat of basicTable.data; index as i">
+            <td>{{ i + 1 }}</td>
+            <td>{{ dat.organizationCode }}</td>
+            <td>{{ dat.organizationName }}</td>
+            <td>{{ dat.changeType | orgChangeType }}</td>
+            <!-- <td>{{ dat.changeContent }}</td>
+            <td>{{ dat.changeBefore }}</td>
+            <td>{{ dat.changeAfter }}</td> -->
+            <td>{{ dat.createBy }}</td>
+            <td>{{ dat.createTime }}</td>
+            <td>{{ dat.effectiveDate }}</td>
+            <td>
+              <div class="btn-td-operat-group">
+                <a nz-button nzType="link" (click)="getDetailInfo(dat, dat.changeType)">查看详情</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+    <div class="sv-panel-footer" *ngIf="listdata.length && pageState === 3">
+      <vx-pagination
+        [totalCount]="totalcount"
+        [(pageIndex)]="pageindex"
+        [(pageSize)]="pagesize"
+        (pageSizeChange)="pageSizeChange($event)"
+        (pageIndexChange)="pageIndexChange($event)"
+      >
+      </vx-pagination>
+    </div>
+  </div>
+</div>

@@ -4,5 +4,9 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "[typescript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-      }
+      },
+    "editor.fontSize": 16,
+    "workbench.editor.showTabs": true,
+    "git.ignoreLimitWarning": true,
+    "angular.enable-strict-mode-prompt": true
 }

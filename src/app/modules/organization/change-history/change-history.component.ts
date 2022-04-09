@@ -1,15 +1,14 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { NzModalService, NzMessageService, NzModalRef } from 'ng-zorro-antd'
-import PerfectScrollbar from 'perfect-scrollbar'
-import { ScrollBarHelper } from 'src/app/utils/scrollbar-helper'
-import { DataState, CHANGE_TYPE_MAP_CHINESE, ChangeResData, UserOpts } from '../interfaces/organization.model'
+import { CHANGE_TYPE_MAP_CHINESE, ChangeResData, UserOpts } from '../interfaces/organization.model'
 import { OrganizationService } from '../service/organization.service'
 import * as moment from 'moment'
 import { ActivatedRoute } from '@angular/router'
 import { debounceTime, filter, map, switchMap } from 'rxjs/operators'
-import { DelModalComponent } from '../modals/del-modal/del-modal.component'
 import { ChangeDetailModalComponent } from '../modals/change-detail-modal/change-detail-modal.component'
 import { BehaviorSubject, Subscription } from 'rxjs'
+import { DelModalComponent } from '@shared/components/del-modal/del-modal.component'
+import { TableButton, TableHeader } from '@shared/components/vx-table/vx-table.component'
 
 @Component({
   selector: 'app-change-history',
@@ -21,7 +20,7 @@ export class ChangeHistoryComponent implements OnInit, OnDestroy, AfterViewInit 
   redirectUrl = '/organization/info'
   type: any[]
   options = {
-    nzActive: true,
+    nzActive: false,
     nzHeader: '查询',
   }
 
@@ -35,16 +34,105 @@ export class ChangeHistoryComponent implements OnInit, OnDestroy, AfterViewInit 
   confirmModal?: NzModalRef
 
   // table
-  scrollbar: PerfectScrollbar
-  tableScroll = { y: '500px' }
-  tableClienHeight: number
   listdata: any[] = []
-  pageState = DataState.LOADING
-  totalcount = 0
-  pagesize = 20
-  pagecount = 1
-  pageindex = 1
-  query = ''
+  listLoading: boolean = false
+  pagination: any = {
+    totaCount: 0,
+    pageSize: 20,
+    pageIndex: 1,
+  }
+  // 表头
+  tableHeader: TableHeader[] = [
+    {
+      key: 'organizationName',
+      name: '组织名称',
+      width: 160,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'changeType',
+      name: '变更类型',
+      width: 100,
+      type: '',
+      format: (row, code) => {
+        return code && row[code] ? CHANGE_TYPE_MAP_CHINESE[row[code]] : '-'
+      },
+      hide: false,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'createByName',
+      name: '操作人',
+      width: 100,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+
+    {
+      key: 'updateTime',
+      name: '操作时间',
+      width: 110,
+      type: '',
+      hide: false,
+      format: (row, code) => {
+        return code && row[code] ? moment(row[code]).format('YYYY-MM-DD HH:mm:ss') : '-'
+      },
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'effectiveDate',
+      name: '生效时间',
+      width: 110,
+      type: '',
+      hide: false,
+      action: false,
+      format: (row, code) => {
+        return code && row[code] ? moment(row[code]).format('YYYY-MM-DD HH:mm:ss') : '-'
+      },
+      sortField: '',
+    },
+
+    {
+      key: 'showStatus',
+      name: '状态',
+      width: 100,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+      slot: 'status',
+    },
+    {
+      key: 'operation',
+      name: '操作',
+      width: 110,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+  ]
+
+  /** 操作按钮 */
+  tableRowBtns: TableButton = {
+    delete: {
+      show: row => row.status === 'UNDO_STATUS',
+      order: 3,
+    },
+  }
+
+  tbaleHeight = 0
 
   // aysn select
   searchChange$ = new BehaviorSubject('')
@@ -75,7 +163,9 @@ export class ChangeHistoryComponent implements OnInit, OnDestroy, AfterViewInit 
 
     this.subscrip = this.router.params.subscribe(res => {
       this.organizationId = res.id
+
       this.loadData()
+      this.tbaleHeight = document.querySelector('.table-warp').clientHeight + 84
     })
 
     this.searchChange$
@@ -89,11 +179,7 @@ export class ChangeHistoryComponent implements OnInit, OnDestroy, AfterViewInit 
       })
   }
 
-  ngAfterViewInit() {
-    const height = (<HTMLDivElement>this.elementView!.nativeElement!).offsetHeight
-
-    this.tableClienHeight = height ? height - 100 : 500
-  }
+  ngAfterViewInit() {}
 
   /** 下拉 */
   onSearch(value: string): void {
@@ -125,7 +211,6 @@ export class ChangeHistoryComponent implements OnInit, OnDestroy, AfterViewInit 
    * 加载grid
    */
   loadData() {
-    this.pageState = DataState.LOADING
     const [begin, end] = this.dateRange
     const beginDate = begin ? moment(begin).format('YYYY-MM-DD') : ''
     const endDate = end ? moment(end).format('YYYY-MM-DD') : ''
@@ -135,38 +220,35 @@ export class ChangeHistoryComponent implements OnInit, OnDestroy, AfterViewInit 
       startCreateDate: beginDate,
       endCreateDate: endDate,
       status: '',
-      page: { size: this.pagesize, current: this.pageindex },
+      page: { size: this.pagination.pageSize, current: this.pagination.pageIndex },
       changeType: this.changeType,
       createBy: this.createBy,
     }
+    this.listLoading = true
     this.orgService.getNoteffectList(params).subscribe(res => {
+      this.listLoading = false
       if (res.result!.code === 0) {
         const { data, page } = res
-        this.pagecount = page.size
-
-        this.totalcount = page.total
-        this.listdata = data || []
-        if (this.listdata.length) {
-          this.pageState = DataState.EXIST_DATA
-          setTimeout(() => {
-            const warp = this.elementRef.nativeElement.querySelector('.ant-table-body')
-            this.tableScroll = { y: this.tableClienHeight + 'px' }
-            if (warp) {
-              this.scrollbar = ScrollBarHelper.makeScrollbar(warp)
-            }
-          }, 1)
-        } else {
-          this.pageState = DataState.EMPTY
-        }
+        this.listdata = data
         this.changeDel.detectChanges()
-      } else {
-        // this.pageState = DataState.EMPTY
+        this.pagination = {
+          totaCount: page.total,
+          pageSize: page.size,
+          pageIndex: page.current,
+        }
       }
     })
   }
+
+  /** table heght */
+  initTableUI(ev: boolean) {
+    const height = document.querySelector('.table-warp').clientHeight
+    this.tbaleHeight = ev ? height - 88 : height + 88
+  }
+
   /** 查询 */
   handleInputKeyup() {
-    this.pageindex = 1
+    this.pagination.pageIndex = 1
     this.loadData()
   }
 
@@ -174,7 +256,7 @@ export class ChangeHistoryComponent implements OnInit, OnDestroy, AfterViewInit 
    * 跳转页数
    */
   pageIndexChange(newPage: number) {
-    this.pageindex = newPage
+    this.pagination.pageIndex = newPage
     this.loadData()
   }
 
@@ -182,16 +264,22 @@ export class ChangeHistoryComponent implements OnInit, OnDestroy, AfterViewInit 
    * 每页显示的条数
    */
   pageSizeChange($event: number) {
-    this.pagesize = $event
-    this.pageindex = 1
+    this.pagination.pageSize = $event
+    this.pagination.pageIndex = 1
     setTimeout(() => {
       this.loadData()
     }, 0)
 
     this.elementRef.nativeElement.querySelector('.ant-table-body').scrollTop = 0
-    setTimeout(() => {
-      this.scrollbar.update()
-    }, 300)
+  }
+
+  /** 操作按钮 */
+  operatClick(ev: { btn: string; row: any }) {
+    switch (ev.btn) {
+      case 'delete':
+        this.showConfirm(2, ev.row.organizationChangePlanId)
+        break
+    }
   }
 
   /**
@@ -287,11 +375,6 @@ export class ChangeHistoryComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   ngOnDestroy() {
-    if (this.scrollbar) {
-      this.scrollbar.destroy()
-      this.scrollbar = null
-    }
-
     if (this.subscrip) this.subscrip.unsubscribe()
     this.modal.closeAll()
   }

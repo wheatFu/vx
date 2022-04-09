@@ -50,10 +50,10 @@ const GLOBAL_THIRD_MODULES = []
 
 // #endregion
 const FORM_MODULES = []
-
+//   { provide: HTTP_INTERCEPTORS, useClass: SimpleInterceptor, multi: true },
 const INTERCEPTOR_PROVIDES = [
-  { provide: HTTP_INTERCEPTORS, useClass: SimpleInterceptor, multi: true },
   { provide: HTTP_INTERCEPTORS, useClass: DefaultInterceptor, multi: true },
+  { provide: HTTP_INTERCEPTORS, useClass: KnxNewTokenInterceptor, multi: true },
 ]
 // #endregion
 export function StartupServiceFactory(startupService: StartupService) {
@@ -74,6 +74,7 @@ import { SharedModule } from './shared/shared.module'
 import { AppComponent } from './app.component'
 import { RoutesModule } from './modules/routes.module'
 import { LayoutModule } from './layout/layout.module'
+import { KnxNewTokenInterceptor } from 'knx-ngx/core'
 
 @NgModule({
   declarations: [AppComponent],

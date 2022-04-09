@@ -48,6 +48,7 @@ export const USERS = {
   '/user': (req: MockRequest) => genData(req.queryString),
   '/user/:id': (req: MockRequest) => list.find(w => w.id === +req.params.id),
   'POST /user/:id': (req: MockRequest) => saveData(+req.params.id, req.body),
+  'POST //auth/login': (req: MockRequest) => saveData(+req.params.id, req.body),
   '/user/current': {
     name: 'Jack',
     avatar: 'https://www.vxhcm.com/Upload/EmployeePhoto/AAABJ/WebSite/99.png',

@@ -68,6 +68,12 @@ export enum ORG_TYPE {
   '1300713386325053441' = '部门',
 }
 
+/** 组织状态 */
+export enum ORG_STATUS {
+  'ENABLE' = '已启用',
+  'DISABLE' = '已禁用',
+}
+
 /** 组织操作类型 */
 export enum CHANGE_TYPE_MAP_CHINESE {
   ORGANIZATION_DELETE = '组织删除',

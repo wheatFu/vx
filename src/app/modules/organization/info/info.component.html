@@ -26,18 +26,11 @@
       </ng-template>
     </div>
   </div>
-  <div class="right" [style.background]="'inherit'">
-    <div class="right-top">
-      <div class="right-menu">
-        <nz-input-group [nzSuffix]="suffixIconSearch" nzSearch>
-          <input type="text" nz-input placeholder="查询" (keyup.enter)="handleInputKeyup()" [(ngModel)]="query" />
-        </nz-input-group>
-        <ng-template #suffixIconSearch>
-          <span class="icon-ic_search" nzSearch (click)="handleInputKeyup()" style="cursor: pointer;"></span>
-        </ng-template>
-        <span class="query" *ngIf="false">高级查询</span>
-      </div>
-      <div class="right-setting">
+  <div class="right">
+    <div class="top-bar">
+      <app-search-input [placeholder]="'查询'" [(ngModel)]="query" (keyUp)="handleInputKeyup()"></app-search-input>
+      <span class="query" *ngIf="false">高级查询</span>
+      <div class="btn-group">
         <button nzType="primary" nz-button [routerLink]="['/organization/edit']" [queryParams]="{ type: 'add' }">
           <span class="custom-icon icon-ic_add"></span>新建
         </button>
@@ -64,90 +57,69 @@
     </div>
 
     <!-- table -->
-    <div class="table-warp" *ngIf="toggleUI === 'A'" #tableWarp>
-      <ng-container *ngIf="pageState != 3">
-        <div class="empty">
-          <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
-          <div class="empty-img" *ngIf="pageState == 2"></div>
-        </div>
-      </ng-container>
-      <div class="sv-panel-body" *ngIf="pageState === 3">
-        <nz-table
-          #basicTable
-          class="table-theme-default quit-style"
-          [nzData]="listdata"
-          [nzLoading]="false"
-          [nzShowPagination]="false"
-          [nzPageSize]="pagesize"
-          [nzScroll]="tableScroll"
-        >
-          <thead>
-            <tr>
-              <th nzWidth="65px">序号</th>
-              <th nzWidth="120px">组织编码</th>
-              <th nzWidth="160px">组织名称</th>
-              <th nzWidth="100px">组织类型</th>
-              <th nzWidth="120px">组织状态</th>
-              <th nzWidth="80px">职位数</th>
-              <th nzWidth="125px">在职员工数</th>
-              <th nzWidth="280px" style="min-width: 280px;">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let dat of basicTable.data; index as i">
-              <td nzBreakWord>{{ i + 1 }}</td>
-              <td nzBreakWord>{{ dat.code }}</td>
-              <td nzBreakWord>{{ dat.name }}</td>
-              <td nzBreakWord>{{ org_type[dat.type] }}</td>
-              <td nzBreakWord>
-                <span ngClass="status status_{{ dat.status }}">已{{ dat.status | orgState }}</span>
-              </td>
-              <td nzBreakWord>
-                <a nz-button nzType="link" (click)="showListMoadl(1, dat.id)">{{ dat.positionNum }}</a>
-              </td>
-              <td nzBreakWord>
-                <a nz-button nzType="link" (click)="showListMoadl(2, dat.id)">{{ dat.employeeNum }}</a>
-              </td>
-              <td style="min-width: 280px;">
-                <div class="btn-td-operat-group">
-                  <!-- disabled -->
-                  <a
-                    nz-button
-                    nzType="link"
-                    [attr.disabled]="dat.status === 'DISABLE' ? true : null"
-                    [routerLink]="['/organization/edit']"
-                    [queryParams]="{ type: 'edit', id: dat.id }"
-                    >编辑</a
-                  >
-                  <a
-                    nz-button
-                    nzType="link"
-                    [routerLink]="['/organization/edit']"
-                    [queryParams]="{ type: 'change', id: dat.id }"
-                    >变更</a
-                  >
-                  <a nz-button nzType="link" [routerLink]="['/organization/merge/', dat.id]">合并</a>
-                  <a nz-button nzType="link" (click)="showEnablefirm(dat)">{{
-                    dat.status === 'DISABLE' ? '启用' : '禁用'
-                  }}</a>
-                  <a nz-button nzType="link" [routerLink]="['/organization/change-history/', dat.id]">变更历史</a>
-                  <a nz-button nzType="link" class="del" (click)="showConfirm(dat.id)">删除</a>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </nz-table>
-      </div>
-      <div class="sv-panel-footer" *ngIf="listdata.length && pageState === 3">
-        <vx-pagination
-          [totalCount]="totalcount"
-          [(pageIndex)]="pageindex"
-          [(pageSize)]="pagesize"
+    <div class="table-warp flex-justify-between" *ngIf="toggleUI === 'A'" #tableWarp>
+      <nz-spin [nzSpinning]="listLoading">
+        <vx-table
+          [listdata]="listdata"
+          [pagination]="pagination"
+          [tableHeader]="tableHeader"
+          [ctxHight]="getTbaleHeight"
+          [columnSlot]="{ status: status, positionNum: employeeNum, employeeNum: employeeNum, customBtns: customBtns }"
+          [tableRowBtns]="tableRowBtns"
+          (operatClick)="operatClick($event)"
           (pageSizeChange)="pageSizeChange($event)"
           (pageIndexChange)="pageIndexChange($event)"
         >
-        </vx-pagination>
-      </div>
+          <ng-template #status let-row>
+            <span ngClass="status status_{{ row.status }}">{{ row.status === 'ENABLE' ? '已启用' : '已禁用' }}</span>
+          </ng-template>
+          <ng-template #positionNum let-row>
+            <a nz-button nzType="link" (click)="showListMoadl(1, row.id)">{{ row.positionNum }}</a>
+          </ng-template>
+          <ng-template #employeeNum let-row>
+            <a nz-button nzType="link" (click)="showListMoadl(2, row.id)">{{ row.employeeNum }}</a>
+          </ng-template>
+          <ng-template #customBtns let-row>
+            <li class="order-1" [ngClass]="{ 'ant-dropdown-menu-item': tableBtnType === 'group' }">
+              <a
+                nz-button
+                nzType="link"
+                [attr.disabled]="row.status === 'DISABLE' ? true : null"
+                [routerLink]="['/organization/edit']"
+                [queryParams]="{ type: 'edit', id: row.id }"
+                >编辑</a
+              >
+            </li>
+            <li class="order-2" [ngClass]="{ 'ant-dropdown-menu-item': tableBtnType === 'group' }">
+              <a
+                [routerLink]="['/organization/edit']"
+                [attr.disabled]="row.status === 'DISABLE' ? true : null"
+                [queryParams]="{ type: 'change', id: row.id }"
+                nz-button
+                nzType="link"
+                >变更</a
+              >
+            </li>
+            <li class="order-3" [ngClass]="{ 'ant-dropdown-menu-item': tableBtnType === 'group' }">
+              <a
+                nz-button
+                nzType="link"
+                [routerLink]="['/organization/merge/', row.id]"
+                [attr.disabled]="row.status === 'DISABLE' ? true : null"
+                >合并</a
+              >
+            </li>
+            <li class="order-4" [ngClass]="{ 'ant-dropdown-menu-item': tableBtnType === 'group' }">
+              <a nz-button nzType="link" (click)="showEnablefirm(row)">{{
+                row.status === 'DISABLE' ? '启用' : '禁用'
+              }}</a>
+            </li>
+            <li class="order-5" [ngClass]="{ 'ant-dropdown-menu-item': tableBtnType === 'group' }">
+              <a nz-button nzType="link" [routerLink]="['/organization/change-history/', row.id]">变更历史</a>
+            </li>
+          </ng-template>
+        </vx-table>
+      </nz-spin>
     </div>
 
     <div class="mind-warp" *ngIf="toggleUI === 'B'">

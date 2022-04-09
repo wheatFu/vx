@@ -1,24 +1,93 @@
 @import './variable.less';
+@custom_layout-default_padding: 20px;
 
 layout-default {
   position: initial !important;
   display: flex !important;
   overflow: hidden;
-  background-color: #f3f3f3;
-
+  background-color: #f7f7f8;
+  padding: @custom_layout-default_padding;
+  flex-direction: column;
   .default {
     position: absolute;
     top: 0;
     right: 0;
-    bottom: 1px;
-    //overflow-y: overlay !important;
+    bottom: -4px;
     left: 0;
-    flex: 1;
     padding: 15px 0 0 0;
     overflow: hidden;
     transition: margin-left 0.1s cubic-bezier(0.645, 0.045, 0.355, 1);
   }
+  @{knz-default-prefix}__aside {
+    &::after {
+      border-right: 0;
+    }
+  }
+  @{knz-default-prefix}__content {
+    margin-left: (@knz-default-aside-wd + @knz-default-content-padding + @custom_layout-default_padding);
+  }
+
+  // style1  unflod
+  .default_aside_toggle {
+    padding: 5px 8px;
+    position: absolute;
+    cursor: pointer;
+    top: 123px;
+    left: 171px;
+    z-index: 15;
+    border-radius: 6px;
+    &_true {
+      background: #fff;
+      box-shadow: 0px 4px 8px 0px rgba(155, 161, 181, 0.3);
+      left: 64px;
+      color: @cu-default-aside-nav-text-selected-color;
+    }
+    &:hover {
+      background: #f0f2fe;
+      border-radius: 6px;
+      color: @cu-default-aside-nav-text-selected-color;
+    }
+  }
 }
+@{knz-default-prefix}__collapsed {
+  @{knz-default-prefix}__content {
+    margin-left: (@knz-default-aside-collapsed-wd + @knz-default-content-padding + @custom_layout-default_padding);
+  }
+}
+
+/** header right  style start */
+.hidden-mobile {
+  &:last-child {
+    margin-left: 12px;
+  }
+
+  .knz-default__nav-item {
+    min-width: 38px;
+    color: #818182;
+  }
+
+  .knz-default__nav-item:hover {
+    border-radius: 4px;
+    background-color: rgba(110, 134, 254, 0.1) !important;
+    color: @cu-default-aside-nav-text-selected-color;
+    & > i {
+      color: @cu-default-aside-nav-text-selected-color;
+    }
+  }
+
+  .knz-default__nav-item > i,
+  .knz-default__nav-item-icon {
+    font-size: 20px !important;
+    color: #ccc;
+  }
+
+  /** 用户下面移入不需要背景色 */
+  header-user > .knz-default__nav-item:hover {
+    background-color: #fff !important;
+  }
+}
+
+/** header right  style  end*/
 
 page-header {
   .page-header {

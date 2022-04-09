@@ -48,11 +48,6 @@
               "text": "职位信息",
               "link": "/position/info",
               "i18n": "menu.hcm.position info"
-            },
-            {
-              "text": "职位字典",
-              "link": "/position/dict",
-              "i18n": "menu.hcm.position dict"
             }
           ]
         },
@@ -64,23 +59,51 @@
           "children": [
             {
               "text": "入职管理",
-              "link": "/entry",
+              "link": "/hr/entry",
               "i18n": "menu.hcm.entry"
             },
             {
               "text": "在职员工管理",
-              "link": "/job",
-              "i18n": "menu.hcm.on the job"
+              "link": "/hr/inservice",
+              "i18n": "menu.hcm.inservice"
             },
             {
               "text": "离职员工管理",
-              "link": "/dimission",
+              "link": "/hr/dismiss",
               "i18n": "menu.hcm.dimission"
             },
             {
               "text": "员工历史变更",
-              "link": "/history",
+              "link": "/hr/history",
               "i18n": "menu.hcm.history"
+            }
+          ]
+        },
+        {
+          "text": "休假管理",
+          "link": "/holiday",
+          "i18n": "menu.hcm.holiday",
+          "icon": "anticon-link",
+          "children": [
+            {
+              "text": "休假项目",
+              "link": "/holiday/items",
+              "i18n": "menu.hcm.items"
+            },
+            {
+              "text": "休假方案设置",
+              "link": "/holiday/scheme-setting",
+              "i18n": "menu.hcm.scheme-setting"
+            },
+            {
+              "text": "休假额度",
+              "link": "/holiday/quota",
+              "i18n": "menu.hcm.quota"
+            },
+            {
+              "text": "员工休假明细",
+              "link": "/holiday/employee-holiday-detail",
+              "i18n": "menu.hcm.employee-holiday-detail"
             }
           ]
         }

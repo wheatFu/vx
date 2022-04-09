@@ -2,8 +2,8 @@ import { HttpBackend, HttpClient } from '@angular/common/http'
 import { Inject, Injectable, OnDestroy } from '@angular/core'
 import { environment } from '@env/environment'
 import { DA_SERVICE_TOKEN, ITokenModel, ITokenService } from '@knz/auth'
-import { interval, Observable, ReplaySubject, Subject, Subscription } from 'rxjs'
-import { catchError, filter, map, share, tap } from 'rxjs/operators'
+import { interval, Observable, Subject, Subscription } from 'rxjs'
+import { filter, map, share, tap } from 'rxjs/operators'
 
 export interface HttpResponseBody<T> {
   data: T
@@ -19,7 +19,7 @@ export interface Tokens {
   refreshToken: string
 }
 /**
- * token @knx 自带, 不在重写
+ * token @knz/auth 自带, 不再重写
  * 本服务主要是refertoken相关
  */
 
@@ -75,6 +75,7 @@ export class ReferTokenService implements OnDestroy {
   isTokenExpired(): boolean {
     const tokensLastModified = this.tokensLastModified
     if (tokensLastModified === -1) return true
+
     return new Date().getTime() - tokensLastModified >= this.tokenExpiredTime
   }
 
@@ -118,9 +119,9 @@ export class ReferTokenService implements OnDestroy {
           if (expired < 0) {
             return null
           }
-          if (!this.isTokenExpired()) {
-            return null
-          }
+          // if (!this.isTokenExpired()) {
+          //   return null
+          // }
 
           item.tokensLastModified = this.tokensLastModified
 

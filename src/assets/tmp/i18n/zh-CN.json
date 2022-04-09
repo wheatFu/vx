@@ -12,9 +12,14 @@
       "position dict": "职位字典",
       "hr": "人事管理",
       "entry": "入职管理",
-      "on the job": "在职员工管理",
+      "inservice": "在职员工管理",
       "dimission": "离职员工管理",
-      "history": "离职员工管理"
+      "history": "员工历史变更",
+      "holiday": "休假管理",
+      "items": "休假项目",
+      "scheme-setting": "休假方案设置",
+      "quota": "休假额度",
+      "employee-holiday-detail": "员工休假明细"
     }
   },
   "app": {

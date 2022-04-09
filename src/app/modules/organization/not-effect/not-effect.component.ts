@@ -1,10 +1,10 @@
 import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { DelModalComponent } from '@shared/components/del-modal/del-modal.component'
+import { TableButton, TableHeader } from '@shared/components/vx-table/vx-table.component'
+import * as moment from 'moment'
 import { NzMessageService, NzModalRef, NzModalService } from 'ng-zorro-antd'
-import PerfectScrollbar from 'perfect-scrollbar'
 import { mergeMap } from 'rxjs/operators'
-import { ScrollBarHelper } from 'src/app/utils/scrollbar-helper'
-import { DataState, ORG_TYPE } from '../interfaces/organization.model'
-import { DelModalComponent } from '../modals/del-modal/del-modal.component'
+import { ORG_TYPE } from '../interfaces/organization.model'
 import { OrganizationService } from '../service/organization.service'
 
 @Component({
@@ -19,19 +19,113 @@ export class NotEffectComponent implements OnInit, OnDestroy {
   // modal
   confirmModal?: NzModalRef
   // table
-  scrollbar: PerfectScrollbar
-  tableScroll = { y: '500px' }
-  tableClienHeight: number
   listdata: any[] = []
-  pageState = DataState.LOADING
-  totalcount = 0
-  pagesize = 20
-  pagecount = 1
-  pageindex = 1
+  listLoading: boolean = false
+  pagination: any = {
+    totaCount: 0,
+    pageSize: 20,
+    pageIndex: 1,
+  }
+  // 表头
+  tableHeader: TableHeader[] = [
+    {
+      key: 'organizationCode',
+      name: '组织编码',
+      width: 120,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'organizationName',
+      name: '组织名称',
+      width: 160,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'type',
+      name: '组织类型',
+      width: 100,
+      type: '',
+      format: (row, code) => {
+        return code && row[code] ? ORG_TYPE[row[code]] : '-'
+      },
+      hide: false,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'region',
+      name: '所属区域',
+      width: 100,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'status',
+      name: '组织状态',
+      width: 100,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+      slot: 'status',
+    },
+
+    {
+      key: 'effectiveDate',
+      name: '生效日期',
+      width: 100,
+      type: '',
+      hide: false,
+      action: false,
+      format: (row, code) => {
+        return code && row[code] ? moment(row[code]).format('YYYY-MM-DD') : '-'
+      },
+      sortField: '',
+    },
+    {
+      key: 'createByName',
+      name: '操作人',
+      width: 80,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+
+    {
+      key: 'operation',
+      name: '操作',
+      width: 80,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+  ]
+
+  /** 操作按钮 */
+  tableRowBtns: TableButton = {
+    delete: {
+      show: true,
+      order: 1,
+    },
+  }
   query = ''
 
-  // 下拉数据，暂时写这里
-  org_type = ORG_TYPE
   constructor(
     public elementRef: ElementRef,
     public changeDel: ChangeDetectorRef,
@@ -43,51 +137,48 @@ export class NotEffectComponent implements OnInit, OnDestroy {
   @ViewChild('tableWarp', { static: true }) elementView: ElementRef
 
   ngOnInit() {
-    const height = (<HTMLDivElement>this.elementView.nativeElement).offsetHeight
-
-    this.tableClienHeight = height ? height - 100 : 500
     this.loadData()
   }
 
+  get getTbaleHeight() {
+    return document.querySelector('.table-warp').clientHeight
+  }
   /**
    * 加载grid
    */
   loadData() {
-    this.pageState = DataState.LOADING
+    this.listLoading = true
     const params = {
       status: 'DOING_STATUS',
       changeType: 'ORGANIZATION_NEW',
-      page: { size: this.pagesize, current: this.pageindex },
+      page: { size: this.pagination.pageSize, current: this.pagination.pageIndex },
       organizationName: this.query,
     }
     this.orgService.getNoteffectList(params).subscribe(res => {
       if (res.result!.code === 0) {
         const { data, page } = res
-        this.pagecount = page.size
-
-        this.totalcount = page.total
-        this.listdata = data || []
-        if (this.listdata.length) {
-          this.pageState = DataState.EXIST_DATA
-          setTimeout(() => {
-            const warp = this.elementRef.nativeElement.querySelector('.ant-table-body')
-            if (warp) {
-              this.scrollbar = ScrollBarHelper.makeScrollbar(warp)
-              this.tableScroll = {
-                y: this.tableClienHeight + 'px',
-              }
-            }
-          }, 1)
+        if (data.length) {
+          this.listdata = data.map((el: { [x: string]: any }) => {
+            const item = el['changeContent'] || {}
+            return { ...el, region: item['region'], type: item['type'] }
+          })
         } else {
-          this.pageState = DataState.EMPTY
+          this.listdata = []
         }
+
+        this.pagination = {
+          totaCount: page.total,
+          pageSize: page.size,
+          pageIndex: page.current,
+        }
+        this.listLoading = false
         this.changeDel.detectChanges()
       }
     })
   }
   /** 查询 */
   handleInputKeyup() {
-    this.pageindex = 1
+    this.pagination.pageIndex = 1
     this.loadData()
   }
 
@@ -95,7 +186,7 @@ export class NotEffectComponent implements OnInit, OnDestroy {
    * 跳转页数
    */
   pageIndexChange(newPage: number) {
-    this.pageindex = newPage
+    this.pagination.pageIndex = newPage
     this.loadData()
   }
 
@@ -103,18 +194,23 @@ export class NotEffectComponent implements OnInit, OnDestroy {
    * 每页显示的条数
    */
   pageSizeChange($event: number) {
-    this.pagesize = $event
-    this.pageindex = 1
+    this.pagination.pageSize = $event
+    this.pagination.pageIndex = 1
     setTimeout(() => {
       this.loadData()
     }, 0)
 
     this.elementRef.nativeElement.querySelector('.ant-table-body').scrollTop = 0
-    setTimeout(() => {
-      this.scrollbar.update()
-    }, 300)
   }
 
+  /** 操作 */
+  operatClick(ev: { btn: string; row: any }) {
+    switch (ev.btn) {
+      case 'delete':
+        this.showConfirm(ev.row.organizationChangePlanId)
+        break
+    }
+  }
   /** 删除modal */
   showConfirm(id: string): void {
     if (!id) {
@@ -167,11 +263,6 @@ export class NotEffectComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.scrollbar) {
-      this.scrollbar.destroy()
-      this.scrollbar = null
-    }
-
     if (this.confirmModal) {
       this.confirmModal.destroy()
       this.confirmModal = null

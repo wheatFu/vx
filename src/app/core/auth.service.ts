@@ -35,7 +35,7 @@ export class AuthService {
 
   /** 获取下拉所有数据 */
   getSelectDataAll() {
-    const dataConfig = localStorage.getItem('dataConfig')
+    const dataConfig = localStorage.getItem('dataConfig') || ''
     return JSON.parse(dataConfig)
   }
 
@@ -58,6 +58,38 @@ export class AuthService {
   getSelectSole(key: string, cloumname: string) {
     const data = this.getSelectDataAll()
 
+    const { tableConfig: tc, paramConfig: pc } = data
+
+    if (!tc || !tc[key].columns || !tc[key].columns.length) {
+      return {}
+    }
+
+    const columns = tc[key].columns as any[]
+    const config = columns.filter(el => el.columnName === cloumname)
+
+    const [{ coreParamConfigId: configId }] = config
+
+    // 去paramConfig 获取
+    if (!configId || !pc.length) {
+      return {}
+    }
+
+    const item = pc.filter((el: { [x: string]: any }) => {
+      return el[configId]
+    })
+    const dt = item.length ? item[0][configId] : {}
+    return dt
+  }
+
+  /**
+   * 20210803
+   * 获取某一个下拉
+   * data: 下拉数据源
+   * key table名 {eg: org_organization}
+   * cloumname 列明 {eg: status }
+   */
+
+  getSelectInData(data: DictData, key: string, cloumname: string) {
     const { tableConfig: tc, paramConfig: pc } = data
 
     if (!tc || !tc[key].columns || !tc[key].columns.length) {
@@ -170,4 +202,19 @@ export interface Employee {
   status: string
   updateTime: string
   userId: string
+}
+
+/** 数据字典下拉 */
+export interface DictData {
+  language?: 'ZH_CN' | 'EN'
+  tableConfig: {
+    [key: string]: {
+      columns: any[]
+      displayName: 'string'
+      relatedObjectTypeString: 'string'
+      tableName: 'string'
+    }
+  }
+  paramConfig: any[]
+  version?: string
 }

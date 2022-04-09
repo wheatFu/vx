@@ -1,25 +1,20 @@
-<div class="knz-default__header-logo">
-  <a [routerLink]="['/']" class="knz-default__header-logo-link">
-    <ul>
-      <li>
-        <img class="knz-default__header-logo" src="./assets/images/logo.png" style="max-height:30px;" />
-      </li>
-      <li>
-        <span>VX</span>
-      </li>
-    </ul>
-  </a>
+<div class="knz-default__header-logo" [routerLink]="['/']" style="cursor: pointer;">
+  <img class="knz-default__header-logo" src="./assets/images/knx-logo.png" style="max-height: 26px;" />
 </div>
 <div class="knz-default__nav-wrap">
   <ul class="knz-default__nav">
     <!-- Menu -->
-    <li>
-      <div class="knz-default__nav-item" (click)="toggleCollapsedSidebar()">
-        <i nz-icon nzType="menu-{{ settings.layout.collapsed ? 'unfold' : 'fold' }}"></i>
-      </div>
-    </li>
+    <div
+      class="default_aside_toggle default_aside_toggle_{{ settings.layout.collapsed }}"
+      (click)="toggleCollapsedSidebar()"
+    >
+      <i nz-icon nzType="menu-{{ settings.layout.collapsed ? 'unfold' : 'fold' }}"></i>
+    </div>
   </ul>
   <ul class="knz-default__nav">
+    <li class="hidden-mobile">
+      <header-theme></header-theme>
+    </li>
     <li class="hidden-mobile">
       <header-i18n></header-i18n>
     </li>

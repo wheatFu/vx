@@ -1,5 +1,5 @@
 import { MenuService, SettingsService, _HttpClient } from '@knz/theme'
-import { Component, OnDestroy, Inject, Optional, OnInit } from '@angular/core'
+import { Component, OnDestroy, Inject, Optional, OnInit, Injector } from '@angular/core'
 import { Router } from '@angular/router'
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'
 import { NzMessageService, NzModalService } from 'ng-zorro-antd'
@@ -10,6 +10,7 @@ import { StartupService } from '@core'
 import { map, mergeMap, tap, filter } from 'rxjs/operators'
 import { AuthService } from '@core/auth.service'
 import { ReferTokenService } from '@core/refer-token.service'
+import { KnxNewTokenService } from 'knx-ngx/core'
 
 @Component({
   selector: 'app-login',
@@ -32,9 +33,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     @Inject(DA_SERVICE_TOKEN) private tokenService: ITokenService,
     private startupSrv: StartupService,
+    private knxNewTokenService: KnxNewTokenService,
     private refTokenSrv: ReferTokenService,
     public http: _HttpClient,
     public msg: NzMessageService,
+    private injector: Injector,
   ) {
     this.form = fb.group({
       userName: [null, [Validators.required, Validators.minLength(4)]],
@@ -44,6 +47,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       remember: [true],
     })
     modalSrv.closeAll()
+    // 处理登录成功后，点击浏览器左上角返回操作时，又回退到登录页的问题
+    const { token } = (this.injector.get(DA_SERVICE_TOKEN) as ITokenService).get()
+    if (token) {
+      this.router.navigateByUrl('/home')
+    }
   }
 
   // #region fields
@@ -124,30 +132,35 @@ export class LoginComponent implements OnInit, OnDestroy {
         password: this.password.value,
         productCode: 'PLATFORM',
       })
-      .pipe(
-        tap(res => {
-          if (+res.result.code !== 0) {
-            throw new Error(res.result.message || '登录失败')
-          }
-        }),
-        map((res: any) => res.data!),
-        tap(res => {
-          this.tokenService.set(res)
-          this.refTokenSrv.setTokensLastModified()
-        }),
-        mergeMap(() => this.getSelfInfo()),
-      )
+      .pipe
+      // tap(res => {
+      //   if (+res.result.code !== 0) {
+      //     throw new Error(res.result.message || '登录失败')
+      //   }
+      // }),
+      // map((res: any) => res.data!),
+      // tap(res => {
+      //   // this.tokenService.set(res)
+      //   // this.refTokenSrv.setTokensLastModified()
+      //   if (res.newToken) {
+      //     this.knxNewTokenService.updateTokensData(res.newToken)
+      //     const decryptToken = this.knxNewTokenService.getDecryptToken(res.newToken)
+      //     this.knxNewTokenService.setTimer(decryptToken.expireDate)
+      //   }
+      // }),
+      // mergeMap(() => this.getSelfInfo()),
+      ()
       .subscribe(
         res => {
-          if (res.result.code === 0) {
-            const { data, dataConfig } = res
+          if (res.result.code !== 0) {
+            const { data } = res
             // 清空路由复用信息
             this.reuseTabService.clear()
 
-            const userInfo = data.isAdmin ? { name: data.name } : data.employee
-            this.settingsService.setUser(userInfo) // 简单用户信息{user: xxx}
-            this.authService.setUserInfo(data) // 中台common用户信息
-            this.authService.setSelectData(dataConfig)
+            // const userInfo = data.isAdmin ? { name: data.name } : data.employee
+            // this.settingsService.setUser(userInfo) // 简单用户信息{user: xxx}
+            // this.authService.setUserInfo(data) // 中台common用户信息
+            // this.authService.setSelectData(dataConfig) // 2021720中台取消全部数据字典接口
 
             let url = this.tokenService.referrer!.url || '/'
             if (url.includes('/passport')) {

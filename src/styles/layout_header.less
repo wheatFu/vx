@@ -1,33 +1,32 @@
- 
-.knz-default__header-logo{
+.knz-default__header-logo {
   width: auto;
   margin: 0;
-  .knz-default__header-logo-link{
-    color: #ffffff;
-  }
-  ul{
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    li{
-      margin: 0;
-      padding: 0;
-      float: left;
-    }
-    li:nth-child(2){
-      display: block;
-      line-height: 30px;
-      padding: 0 0 0 10px;
+}
+
+.knz-default__header_style1 {
+  box-sizing: border-box;
+  height: 50px;
+  background: #ffffff;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .knz-default__nav-wrap {
+    .knz-default__nav-item,
+    .knz-default__nav nz-badge {
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      // color: #818182 !important;
+      line-height: 20px;
     }
   }
 }
-.knz-default__collapsed{
-  .knz-default__header-logo{
+
+.knz-default__collapsed {
+  .knz-default__header-logo {
     width: auto;
-    ul{
-      li:nth-child(2){
-        display: none;
-      }
-    }
   }
 }

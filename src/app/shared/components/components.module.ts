@@ -1,16 +1,21 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { NgZorroAntdModule } from 'ng-zorro-antd'
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component'
 import { RouterModule } from '@angular/router'
 import { VxPaginationModule } from './pagination/pagination.module'
+import { DelModalComponent } from './del-modal/del-modal.component'
+import { TreeGraphComponent } from '@shared/components/graph/tree-graph.component'
+import { SearchInputComponent } from './search-input/search-input.component'
 
-const COMPONENTS = [BreadcrumbComponent]
+import { FormsModule } from '@angular/forms'
+import { VxTableComponent } from './vx-table/vx-table.component'
+
+const COMPONENTS = [DelModalComponent, TreeGraphComponent, SearchInputComponent, VxTableComponent]
 
 @NgModule({
   declarations: [...COMPONENTS],
-  imports: [CommonModule, NgZorroAntdModule, RouterModule, VxPaginationModule],
+  imports: [CommonModule, NgZorroAntdModule, RouterModule, VxPaginationModule, FormsModule],
   exports: [...COMPONENTS, VxPaginationModule],
-  entryComponents: [],
+  entryComponents: [DelModalComponent],
 })
 export class SharedComponentsModule {}

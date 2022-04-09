@@ -1,6 +1,14 @@
 //主题色
 @theme-color: #1890ff;
 
+@cu-default-aside-nav-text-selected-color: #6e86fe;
+/* search-input bg-color */
+@background-color-search: #e5e8f1;
+
+/* table */
+@td-v-padding: 11px;
+@td-l-padding: 13px;
+
 //字体超出
 .vxfontEllipsis(@lineclamp:1) {
   overflow: hidden;
@@ -10,10 +18,13 @@
   -webkit-box-orient: vertical;
 }
 
+// table
+@table-cls: ant-table;
+
 //滚动条
 .vxscrollbar() {
   scrollbar-color: transparent;
-  overflow-y: overlay;
+  overflow-y: auto;
   overflow-x: hidden;
   &::-webkit-scrollbar {
     width: 6px;

@@ -1,14 +1,13 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import * as moment from 'moment'
 import { NzMessageService, NzModalRef, NzModalService, NzTreeNode } from 'ng-zorro-antd'
-import PerfectScrollbar from 'perfect-scrollbar'
-import { ScrollBarHelper } from 'src/app/utils/scrollbar-helper'
-import { DataState, ORG_TYPE, TreeSourceOpts } from '../interfaces/organization.model'
-import { DelModalComponent } from '../modals/del-modal/del-modal.component'
+import { ORG_STATUS, ORG_TYPE, TreeSourceOpts } from '../interfaces/organization.model'
 import { EnableModalComponent } from '../modals/enable-modal/enable-modal.component'
 import { GridDetaiModalComponent } from '../modals/grid-detai-modal/grid-detai-modal.component'
 import { OrganizationService } from '../service/organization.service'
 import { downLoadFile } from '../../../utils/utils'
+import { DelModalComponent } from '@shared/components/del-modal/del-modal.component'
+import { TableButton, TableHeader } from '@shared/components/vx-table/vx-table.component'
 
 @Component({
   selector: 'app-info',
@@ -18,7 +17,6 @@ import { downLoadFile } from '../../../utils/utils'
 export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
   levelCount = -1
   list: any[]
-  tableClienHeight: number
   toggleUI = 'A'
 
   // tree
@@ -26,14 +24,101 @@ export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
   treeloading = true
 
   // table
-  scrollbar: PerfectScrollbar
-  tableScroll = { y: '500px' }
   listdata: any[] = []
-  pageState = DataState.LOADING
-  totalcount = 0
-  pagesize = 20
-  pagecount = 1
-  pageindex = 1
+  listLoading: boolean = false
+  pagination: any = {
+    totaCount: 0,
+    pageSize: 20,
+    pageIndex: 1,
+  }
+
+  // 表头
+  tableHeader: TableHeader[] = [
+    {
+      key: 'code',
+      name: '组织编码',
+      width: 120,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'name',
+      name: '组织名称',
+      width: 160,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'type',
+      name: '组织类型',
+      width: 100,
+      type: '',
+      format: (row, code) => {
+        return code && row[code] ? ORG_TYPE[row[code]] : '-'
+      },
+      hide: false,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'status',
+      name: '组织状态',
+      width: 100,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+      slot: 'status',
+    },
+
+    {
+      key: 'positionNum',
+      name: '职位数',
+      width: 110,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+      slot: 'positionNum',
+    },
+    {
+      key: 'employeeNum',
+      name: '在职员工数',
+      width: 110,
+      type: '',
+      hide: false,
+      action: false,
+      sortField: '',
+      slot: 'employeeNum',
+    },
+    {
+      key: 'operation',
+      name: '操作',
+      width: 280,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+  ]
+
+  /** 操作按钮 */
+  tableRowBtns: TableButton = {
+    delete: {
+      show: true,
+      order: 6,
+    },
+    edit: { show: false, order: 1 },
+  }
   query = ''
 
   // 流程图数据源
@@ -41,9 +126,6 @@ export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // modal
   confirmModal?: NzModalRef
-
-  // 下拉数据，暂时写这里
-  org_type = ORG_TYPE
 
   constructor(
     public elementRef: ElementRef,
@@ -56,7 +138,12 @@ export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('tableWarp', { static: false }) elementView: ElementRef
 
   ngOnInit() {
+    this.loadData()
     this.getTreeDat()
+  }
+
+  get getTbaleHeight() {
+    return document.querySelector('.table-warp').clientHeight
   }
 
   /** 获取树结构 */
@@ -113,20 +200,15 @@ export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
     this.list = [{ value: -1, label: '展开全部' }, ...list_tmp]
   }
 
-  ngAfterViewInit() {
-    const height = (<HTMLDivElement>this.elementView!.nativeElement).offsetHeight
-
-    this.tableClienHeight = height ? height - 100 : 500
-    this.loadData()
-  }
+  ngAfterViewInit() {}
 
   /**
    * 加载grid
    */
   loadData(id?: string) {
-    this.pageState = DataState.LOADING
+    this.listLoading = true
     const params = {
-      page: { size: this.pagesize, current: this.pageindex },
+      page: { size: this.pagination.pageSize, current: this.pagination.pageIndex },
       name: this.query,
       queryOrganizationRootId: id || '',
     }
@@ -134,30 +216,22 @@ export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
       this.changeDel.detectChanges()
       if (res.result!.code === 0) {
         const { data, page } = res
-        this.pagecount = page.size
 
-        this.totalcount = page.total
         this.listdata = data
-
-        if (this.listdata.length) {
-          this.pageState = DataState.EXIST_DATA
-          setTimeout(() => {
-            const warp = this.elementRef.nativeElement.querySelector('.ant-table-body')
-            this.tableScroll = { y: this.tableClienHeight + 'px' }
-            if (warp) {
-              this.scrollbar = ScrollBarHelper.makeScrollbar(warp)
-            }
-          }, 1)
-        } else {
-          this.pageState = DataState.EMPTY
+        this.pagination = {
+          totaCount: page.total,
+          pageSize: page.size,
+          pageIndex: page.current,
         }
+
+        this.listLoading = false
       }
     })
   }
   /** 查询 */
   handleInputKeyup() {
     this.toggleUI = 'A'
-    this.pageindex = 1
+    this.pagination.pageIndex = 1
     this.loadData()
   }
 
@@ -165,7 +239,7 @@ export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
    * 跳转页数
    */
   pageIndexChange(newPage: number) {
-    this.pageindex = newPage
+    this.pagination.pageIndex = newPage
     this.loadData()
   }
 
@@ -173,16 +247,22 @@ export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
    * 每页显示的条数
    */
   pageSizeChange($event: number) {
-    this.pagesize = $event
-    this.pageindex = 1
+    this.pagination.pageSize = $event
+    this.pagination.pageIndex = 1
     setTimeout(() => {
       this.loadData()
     }, 0)
 
     this.elementRef.nativeElement.querySelector('.ant-table-body').scrollTop = 0
-    setTimeout(() => {
-      this.scrollbar.update()
-    }, 300)
+  }
+
+  /** 操作按钮 */
+  operatClick(ev: { btn: string; row: any }) {
+    switch (ev.btn) {
+      case 'delete':
+        this.showConfirm(ev.row.id)
+        break
+    }
   }
 
   /** 删除modal */
@@ -323,10 +403,6 @@ export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.scrollbar) {
-      this.scrollbar.destroy()
-      this.scrollbar = null
-    }
     if (this.confirmModal) {
       this.confirmModal.destroy()
       this.confirmModal = null
@@ -336,7 +412,7 @@ export class InfoComponent implements OnInit, AfterViewInit, OnDestroy {
   /** 导出 */
   exportOrganList() {
     const params = {
-      page: { size: this.pagesize, current: this.pageindex },
+      page: { size: this.pagination.pageSize, current: this.pagination.pageIndex },
     }
     this.orgService.exportOrganizationList(params).subscribe(resp => {
       // 获取文件名信息

@@ -8,6 +8,7 @@ import { KNZAssemblyModule } from '@knz/assembly'
 import { KNZChartModule } from '@knz/chart'
 import { KNZRoleModule } from '@knz/role'
 import { KNZFormModule } from '@knz/form'
+import { KnxCoreModule } from 'knx-ngx/core'
 
 // 中台统一组件
 import { KnxVuiModule } from 'knx-vui'
@@ -21,6 +22,9 @@ import { UEditorModule } from 'ngx-ueditor'
 import { NgxTinymceModule } from 'ngx-tinymce'
 import { SharedComponentsModule } from './components/components.module'
 import { OrgStatePipe, OrgChangeTypePipe, BoolePipePipe } from './pipes/index'
+
+// directive
+import { DirectiveModule } from './directive/directive.module'
 
 const COMPONENTS_Chart = []
 
@@ -42,12 +46,14 @@ const PIPES = [OrgStatePipe, OrgChangeTypePipe, BoolePipePipe]
     RouterModule,
     ReactiveFormsModule,
     KNZThemeModule.forChild(),
+    KnxCoreModule.forRoot({ baseHref: '/vx' }),
     KNZAssemblyModule,
     KNZChartModule,
     KNZRoleModule,
     KNZFormModule,
     SharedComponentsModule,
     KnxVuiModule,
+    DirectiveModule,
     ...THIRDMODULES,
   ],
   declarations: [...COMPONENTS, ...DIRECTIVES, ...PIPES, ...COMPONENTS_Chart],
@@ -63,7 +69,9 @@ const PIPES = [OrgStatePipe, OrgChangeTypePipe, BoolePipePipe]
     KNZFormModule,
     TranslateModule,
     SharedComponentsModule,
+    KnxCoreModule,
     KnxVuiModule,
+    DirectiveModule,
     ...THIRDMODULES,
     ...COMPONENTS,
     ...DIRECTIVES,

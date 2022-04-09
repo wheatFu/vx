@@ -54,9 +54,9 @@ export class DefaultInterceptor implements HttpInterceptor {
     public i18NService: I18NService,
     public modalService: NzModalService,
   ) {
-    if (this.refreshTokenType === 'auth-refresh') {
-      this.buildAuthRefresh()
-    }
+    // if (this.refreshTokenType === 'auth-refresh') {
+    //   this.buildAuthRefresh()
+    // }
   }
 
   get msg(): NzMessageService {
@@ -178,15 +178,19 @@ export class DefaultInterceptor implements HttpInterceptor {
          */
 
         // @ts-ignore
-        const code = ev.error && ev.error.result.code && ev.error.result.code
-        if (code === 14 && this.refreshTokenEnabled && this.refreshTokenType === 're-request') {
-          return this.tryRefreshToken(ev, req, next)
-        }
+        // const code = ev.error && ev.error.result.code && ev.error.result.code
+        // if (code === 14 && this.refreshTokenEnabled && this.refreshTokenType === 're-request') {
+        //   /**
+        //    * 方法暂时不用
+        //    * 使用中台的token机制
+        //    */
+        //   // return this.tryRefreshToken(ev, req, next)
+        // }
 
-        this.modalService.closeAll()
-        this.refertokenSrv.clearTokensData()
-        this.msg.error(`未登录或登录已过期，请重新登录。`)
-        this.goTo('/auth/login')
+        // this.modalService.closeAll()
+        // this.refertokenSrv.clearTokensData()
+        // this.msg.error(`未登录或登录已过期，请重新登录。`)
+        // this.goTo('/auth/login')
         break
       case 403:
       case 404:

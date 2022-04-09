@@ -7,85 +7,33 @@
   </nz-breadcrumb-item>
 </nz-breadcrumb>
 
-<div class="effect">
-  <div class="right" [style.background]="'inherit'">
-    <div class="right-top">
-      <div class="right-menu">
-        <nz-input-group [nzSuffix]="suffixIconSearch" nzSearch>
-          <input type="text" nz-input placeholder="查询" (keyup.enter)="handleInputKeyup()" [(ngModel)]="query" />
-        </nz-input-group>
-        <ng-template #suffixIconSearch>
-          <span class="icon-ic_search" style="cursor: pointer;" nzSearch (click)="handleInputKeyup()"></span>
-        </ng-template>
-        <span class="query" *ngIf="false">高级查询</span>
-      </div>
-      <div class="right-setting">
-        <button nzType="primary" nz-button nzGhost host-button [routerLink]="redirectUrl">取消</button>
-      </div>
+<div class="mian flex-v">
+  <div class="top-bar">
+    <app-search-input [placeholder]="'查询'" [(ngModel)]="query" (keyUp)="handleInputKeyup()"></app-search-input>
+    <span class="query" *ngIf="false">高级查询</span>
+    <div class="btn-group">
+      <button nzType="primary" nz-button nzGhost host-button [routerLink]="redirectUrl">取消</button>
     </div>
+  </div>
 
-    <!-- table -->
-    <div class="table-warp" #tableWarp>
-      <ng-container *ngIf="pageState != 3">
-        <div class="empty">
-          <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
-          <div class="empty-img" *ngIf="pageState == 2"></div>
-        </div>
-      </ng-container>
-      <div class="sv-panel-body" *ngIf="pageState === 3">
-        <nz-table
-          #basicTable
-          class="table-theme-default quit-style"
-          [nzData]="listdata"
-          [nzLoading]="false"
-          [nzShowPagination]="false"
-          [nzPageSize]="pagesize"
-          [nzScroll]="tableScroll"
-        >
-          <thead>
-            <tr>
-              <th nzWidth="60px">序号</th>
-              <th nzWidth="120px">组织编码</th>
-              <th nzWidth="160px">组织名称</th>
-              <th nzWidth="100px">组织类型</th>
-              <th nzWidth="100px">所属区域</th>
-              <th nzWidth="100px">组织状态</th>
-              <th nzWidth="100px">生效日期</th>
-              <th nzWidth="80px">操作人</th>
-              <th nzWidth="120px">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let dat of basicTable.data; index as i">
-              <td>{{ i + 1 }}</td>
-              <td>{{ dat.organizationCode }}</td>
-              <td>{{ dat.organizationName }}</td>
-              <td>{{ org_type[dat?.changeContent?.type] || '-' }}</td>
-              <td>{{ dat?.changeContent?.region || '-' }}</td>
-              <td>
-                <span ngClass="status status_{{ dat.status }}">{{ dat.showStatus }}</span>
-              </td>
-              <td>{{ dat?.effectiveDate || '-' }}</td>
-              <td>{{ dat?.createByName || '-' }}</td>
-              <td>
-                <div class="btn-td-operat-group">
-                  <a nz-button nzType="link" class="del" (click)="showConfirm(dat?.organizationChangePlanId)">删除</a>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </nz-table>
-      </div>
-      <div class="sv-panel-footer" *ngIf="listdata.length && pageState === 3">
-        <vx-pagination
-          [totalCount]="totalcount"
-          [(pageIndex)]="pageindex"
-          [(pageSize)]="pagesize"
-          (pageSizeChange)="pageSizeChange($event)"
-          (pageIndexChange)="pageIndexChange($event)"
-        >
-        </vx-pagination>
-      </div>
-    </div>
+  <!-- table -->
+  <div class="table-warp" #tableWarp>
+    <nz-spin [nzSpinning]="listLoading">
+      <vx-table
+        [listdata]="listdata"
+        [pagination]="pagination"
+        [tableHeader]="tableHeader"
+        [ctxHight]="getTbaleHeight"
+        [columnSlot]="{ status: status }"
+        [tableRowBtns]="tableRowBtns"
+        (operatClick)="operatClick($event)"
+        (pageSizeChange)="pageSizeChange($event)"
+        (pageIndexChange)="pageIndexChange($event)"
+      >
+        <ng-template #status let-row>
+          <span ngClass="status status_{{ row.status }}">{{ row.showStatus }}</span>
+        </ng-template>
+      </vx-table>
+    </nz-spin>
   </div>
 </div>

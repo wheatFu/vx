@@ -2,10 +2,9 @@ import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { SharedModule } from '@shared'
 import { EnableModalComponent } from './enable-modal/enable-modal.component'
-import { DelModalComponent } from './del-modal/del-modal.component'
 import { ChangeDetailModalComponent } from './change-detail-modal/change-detail-modal.component'
 import { GridDetaiModalComponent } from './grid-detai-modal/grid-detai-modal.component'
-const COMPONENTS = [DelModalComponent, EnableModalComponent, ChangeDetailModalComponent, GridDetaiModalComponent]
+const COMPONENTS = [EnableModalComponent, ChangeDetailModalComponent, GridDetaiModalComponent]
 
 @NgModule({
   declarations: [...COMPONENTS],

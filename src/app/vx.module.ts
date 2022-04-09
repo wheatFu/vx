@@ -12,8 +12,8 @@ import { KNZMockModule } from '@knz/mock'
 import * as MOCKDATA from '../../_mock'
 import { environment } from '@env/environment'
 // const MOCK_MODULES = !environment.production ? [KNZMockModule.forRoot({ data: MOCKDATA })] : []
-// const MOCK_MODULES = [KNZMockModule.forRoot({ data: MOCKDATA })]
-const MOCK_MODULES = []
+const MOCK_MODULES = [KNZMockModule.forRoot({ data: MOCKDATA })]
+// const MOCK_MODULES = []
 
 // #endregion
 

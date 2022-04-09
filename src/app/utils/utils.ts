@@ -23,3 +23,19 @@ export const downLoadFile = (stream, filename, type?) => {
   a.click()
   window.URL.revokeObjectURL(url)
 }
+/**
+ * @description:解析路由参数.以对象的形式返回
+ * @param url 地址
+ * @return 以key-value的形式返回路由参数
+ */
+export const parseQueryParam = url => {
+  const _get_query_params_reg = /[?&]([^&]+)=([^&]+)/gi
+  const _remove_special_symbol_reg = /[?&]/gi
+  const _match_results = url.match(_get_query_params_reg) || []
+  return _match_results.reduce((prev, next) => {
+    next = next.replace(_remove_special_symbol_reg, '')
+    const [key, value] = next.split('=')
+    prev[key] = value
+    return prev
+  }, {})
+}

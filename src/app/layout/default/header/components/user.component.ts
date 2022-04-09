@@ -14,8 +14,9 @@ import { DA_SERVICE_TOKEN, ITokenService } from '@knz/auth'
       nzPlacement="bottomRight"
       [nzDropdownMenu]="userMenu"
     >
-      <nz-avatar [nzSrc]="settings.user.avatar" nzSize="small" class="mr-sm"></nz-avatar>
+      <nz-avatar [nzSrc]="settings.user.avatar" [nzSize]="30" class="mr-sm"></nz-avatar>
       {{ settings.user.name }}
+      <i nz-icon nzType="caret-down" nzTheme="outline" style="font-size: 10px !important;margin-left: 12px;"></i>
     </div>
     <nz-dropdown-menu #userMenu="nzDropdownMenu">
       <div nz-menu class="width-sm">

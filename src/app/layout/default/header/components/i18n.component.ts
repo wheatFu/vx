@@ -8,7 +8,13 @@ import { I18NService } from '@core'
 @Component({
   selector: 'header-i18n',
   template: `
-    <div class="knz-default__nav-item" nz-dropdown [nzDropdownMenu]="langMenu" nzPlacement="bottomRight">
+    <div
+      class="knz-default__nav-item"
+      nz-dropdown
+      [nzDropdownMenu]="langMenu"
+      nzTrigger="click"
+      nzPlacement="bottomRight"
+    >
       <i nz-icon nzType="global"></i>
     </div>
 

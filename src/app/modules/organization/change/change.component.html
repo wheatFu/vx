@@ -75,7 +75,7 @@
               <nz-range-picker formControlName="date"></nz-range-picker>
             </nz-form-control>
 
-            <div nz-col [nzSpan]="2" class="table-search-buttons">
+            <div nz-col [nzSpan]="3" class="table-search-buttons">
               <button nz-button nzType="link" class="table-search-submit" (click)="queryUpdateHistory()">
                 查询
               </button>
@@ -86,67 +86,22 @@
     </nz-collapse>
   </div>
   <div class="table-warp">
-    <ng-container *ngIf="pageState != 3">
-      <div class="empty">
-        <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
-        <div class="empty-img" *ngIf="pageState == 2"></div>
-      </div>
-    </ng-container>
-    <div class="sv-panel-body" *ngIf="pageState === 3">
-      <nz-table
-        #basicTable
-        class="table-theme-default quit-style"
-        [nzData]="listdata"
-        [nzLoading]="false"
-        [nzShowPagination]="false"
-        [nzPageSize]="pagesize"
-        [nzScroll]="tableScroll"
-      >
-        <thead>
-          <tr>
-            <th nzWidth="60px">序号</th>
-            <th nzWidth="120px">组织编码</th>
-            <th nzWidth="160px">组织名称</th>
-            <th nzWidth="160px">变更类型</th>
-            <!-- <th nzWidth="100px">变更内容</th>
-            <th nzWidth="160px">变更前</th>
-            <th nzWidth="160px">变更后</th> -->
-            <th nzWidth="100px">操作人</th>
-            <th nzWidth="160px">操作时间</th>
-            <th nzWidth="160px">生效时间</th>
-            <th nzWidth="160px">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let dat of basicTable.data; index as i">
-            <td>{{ i + 1 }}</td>
-            <td>{{ dat.organizationCode }}</td>
-            <td>{{ dat.organizationName }}</td>
-            <td>{{ dat.changeType | orgChangeType }}</td>
-            <!-- <td>{{ dat.changeContent }}</td>
-            <td>{{ dat.changeBefore }}</td>
-            <td>{{ dat.changeAfter }}</td> -->
-            <td>{{ dat.createBy }}</td>
-            <td>{{ dat.createTime }}</td>
-            <td>{{ dat.effectiveDate }}</td>
-            <td>
-              <div class="btn-td-operat-group">
-                <a nz-button nzType="link" (click)="getDetailInfo(dat, dat.changeType)">查看详情</a>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </nz-table>
-    </div>
-    <div class="sv-panel-footer" *ngIf="listdata.length && pageState === 3">
-      <vx-pagination
-        [totalCount]="totalcount"
-        [(pageIndex)]="pageindex"
-        [(pageSize)]="pagesize"
+    <nz-spin [nzSpinning]="listLoading">
+      <vx-table
+        [listdata]="listdata"
+        [pagination]="pagination"
+        [tableHeader]="tableHeader"
+        [ctxHight]="tbaleHeight"
+        [columnSlot]="{ customBtns: customBtns }"
         (pageSizeChange)="pageSizeChange($event)"
         (pageIndexChange)="pageIndexChange($event)"
       >
-      </vx-pagination>
-    </div>
+        <ng-template #customBtns let-row>
+          <li class="order-1" [ngClass]="{ 'ant-dropdown-menu-item': tableBtnType === 'group' }">
+            <a nz-button nzType="link" (click)="getDetailInfo(row, row.changeType)">查看详情</a>
+          </li>
+        </ng-template>
+      </vx-table>
+    </nz-spin>
   </div>
 </div>

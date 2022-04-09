@@ -7,151 +7,110 @@
   </nz-breadcrumb-item>
 </nz-breadcrumb>
 
-<!-- btn -->
-<div class="btn-group-right">
-  <button nzType="primary" nz-button nzGhost host-button (click)="exportChangeHistory()">
-    <span class="custom-icon icon-ic_export"></span>导出
-  </button>
-  <button nz-button nzType="link" class="alone-icon-warp" [routerLink]="redirectUrl">
-    <span class="alone-icon icon-ic_back"></span>
-  </button>
-</div>
-
-<!-- 折叠search -->
-<nz-collapse [nzBordered]="false">
-  <nz-collapse-panel
-    class="table-search-panel"
-    [nzHeader]="options.nzHeader"
-    [(nzActive)]="options.nzActive"
-    [nzShowArrow]="false"
-    [nzExtra]="extraTemplate"
-  >
-    <ng-template #extraTemplate>
-      <i
-        class="table-search-icon"
-        nz-icon
-        [nzType]="'up'"
-        [nzRotate]="options.nzActive ? 0 : 180"
-        (click)="options.nzActive = !options.nzActive"
-      ></i>
-      <span class="table-search-icon-text">{{ options.nzActive ? '收起' : '展开' }}</span>
-    </ng-template>
-
-    <form class="table-search-form" nz-form>
-      <nz-form-item class="" nz-col [nzSpan]="21">
-        <nz-form-label [nzSpan]="3" [nzNoColon]="true">变更类型</nz-form-label>
-        <nz-form-control [nzSpan]="5">
-          <nz-select nzShowSearch nzPlaceHolder="" [(ngModel)]="changeType" name="changeType">
-            <nz-option *ngFor="let item of type" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
-          </nz-select>
-        </nz-form-control>
-
-        <nz-form-label [nzSpan]="3" [nzNoColon]="true">操作人</nz-form-label>
-        <nz-form-control [nzSpan]="5">
-          <nz-select
-            nzPlaceHolder=""
-            nzAllowClear
-            nzShowSearch
-            nzServerSearch
-            [(ngModel)]="createBy"
-            name="createBy"
-            (nzOnSearch)="onSearch($event)"
-          >
-            <ng-container *ngFor="let o of selectopts">
-              <nz-option *ngIf="!selectLoading" [nzValue]="o.userId" [nzLabel]="o.name"></nz-option>
-            </ng-container>
-            <nz-option *ngIf="selectLoading" nzDisabled nzCustomContent>
-              <i nz-icon nzType="loading" class="loading-icon"></i> 检索中...
-            </nz-option>
-          </nz-select>
-        </nz-form-control>
-
-        <nz-form-label [nzSpan]="3" [nzNoColon]="true">操作日期</nz-form-label>
-        <nz-form-control [nzSpan]="5">
-          <nz-range-picker [(ngModel)]="dateRange" name="dateRange"></nz-range-picker>
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item class="table-search-buttons" nz-col [nzSpan]="3">
-        <button class="table-search-submit" (click)="handleInputKeyup()">查询</button>
-      </nz-form-item>
-    </form>
-  </nz-collapse-panel>
-</nz-collapse>
-
-<!-- table -->
-<div class="table-warp" #tableWarp>
-  <ng-container>
-    <div class="empty" *ngIf="pageState != 3">
-      <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
-      <div class="empty-img" *ngIf="pageState == 2"></div>
-    </div>
-  </ng-container>
-  <div class="sv-panel-body" *ngIf="pageState === 3">
-    <nz-table
-      #basicTable
-      class="table-theme-default quit-style"
-      [nzData]="listdata"
-      [nzLoading]="false"
-      [nzShowPagination]="false"
-      [nzPageSize]="20"
-      [nzScroll]="tableScroll"
-    >
-      <thead>
-        <tr>
-          <th nzWidth="60px">序号</th>
-          <th nzWidth="120px">当前组织名称</th>
-          <th nzWidth="100px">变更类型</th>
-          <th nzWidth="160px">操作人</th>
-          <th nzWidth="120px">操作时间</th>
-          <th nzWidth="120px">生效时间</th>
-          <th nzWidth="100px">状态</th>
-          <th nzWidth="120px">操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let dat of basicTable.data; index as i">
-          <td>{{ i + 1 }}</td>
-          <td>{{ dat.organizationName }}</td>
-          <td>{{ dat.changeType | orgChangeType }}</td>
-          <td>{{ dat?.createByName }}</td>
-          <td>{{ dat?.updateTime | date: 'yyyy/MM/dd HH:mm:ss' }}</td>
-          <td>{{ dat?.effectiveDate | date: 'yyyy/MM/dd HH:mm:ss' }}</td>
-          <td>
-            <span ngClass="status status_{{ dat.status }}">{{ dat.showStatus }}</span>
-          </td>
-          <td>
-            <div class="btn-td-operat-group">
-              <a nz-button nzType="link" (click)="showDetail(dat, dat.changeType)">查看详情</a>
-              <a
-                nz-button
-                nzType="link"
-                *ngIf="dat.status === 'DOING_STATUS'"
-                (click)="showConfirm(1, dat.organizationChangePlanId)"
-                >撤销</a
-              >
-              <a
-                nz-button
-                nzType="link"
-                *ngIf="dat.status === 'UNDO_STATUS'"
-                class="del"
-                (click)="showConfirm(2, dat.organizationChangePlanId)"
-                >删除</a
-              >
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </nz-table>
+<div class="mian">
+  <!-- btn -->
+  <div class="btn-group-right">
+    <button nzType="primary" nz-button nzGhost host-button (click)="exportChangeHistory()">
+      <span class="custom-icon icon-ic_export"></span>导出
+    </button>
+    <button nz-button nzType="link" class="alone-icon-warp" [routerLink]="redirectUrl">
+      <span class="alone-icon icon-ic_back"></span>
+    </button>
   </div>
-  <div class="sv-panel-footer" *ngIf="listdata.length && pageState === 3">
-    <vx-pagination
-      [totalCount]="totalcount"
-      [(pageIndex)]="pageindex"
-      [(pageSize)]="pagesize"
-      (pageSizeChange)="pageSizeChange($event)"
-      (pageIndexChange)="pageIndexChange($event)"
+
+  <!-- 折叠search -->
+  <nz-collapse [nzBordered]="false">
+    <nz-collapse-panel
+      class="table-search-panel"
+      [nzHeader]="options.nzHeader"
+      [(nzActive)]="options.nzActive"
+      [nzShowArrow]="false"
+      [nzExtra]="extraTemplate"
+      (nzActiveChange)="initTableUI($event)"
     >
-    </vx-pagination>
+      <ng-template #extraTemplate>
+        <i
+          class="table-search-icon"
+          nz-icon
+          [nzType]="'up'"
+          [nzRotate]="options.nzActive ? 0 : 180"
+          (click)="options.nzActive = !options.nzActive"
+        ></i>
+        <span class="table-search-icon-text">{{ options.nzActive ? '收起' : '展开' }}</span>
+      </ng-template>
+
+      <form class="table-search-form" nz-form>
+        <nz-form-item class="" nz-col [nzSpan]="21">
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true">变更类型</nz-form-label>
+          <nz-form-control [nzSpan]="5">
+            <nz-select nzShowSearch nzPlaceHolder="" [(ngModel)]="changeType" name="changeType">
+              <nz-option *ngFor="let item of type" [nzValue]="item.value" [nzLabel]="item.label"></nz-option>
+            </nz-select>
+          </nz-form-control>
+
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true">操作人</nz-form-label>
+          <nz-form-control [nzSpan]="5">
+            <nz-select
+              nzPlaceHolder=""
+              nzAllowClear
+              nzShowSearch
+              nzServerSearch
+              [(ngModel)]="createBy"
+              name="createBy"
+              (nzOnSearch)="onSearch($event)"
+            >
+              <ng-container *ngFor="let o of selectopts">
+                <nz-option *ngIf="!selectLoading" [nzValue]="o.userId" [nzLabel]="o.name"></nz-option>
+              </ng-container>
+              <nz-option *ngIf="selectLoading" nzDisabled nzCustomContent>
+                <i nz-icon nzType="loading" class="loading-icon"></i> 检索中...
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true">操作日期</nz-form-label>
+          <nz-form-control [nzSpan]="5">
+            <nz-range-picker [(ngModel)]="dateRange" name="dateRange"></nz-range-picker>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="table-search-buttons" nz-col [nzSpan]="3">
+          <button class="table-search-submit" (click)="handleInputKeyup()">查询</button>
+        </nz-form-item>
+      </form>
+    </nz-collapse-panel>
+  </nz-collapse>
+
+  <!-- table -->
+  <div class="table-warp" #tableWarp>
+    <nz-spin [nzSpinning]="listLoading">
+      <vx-table
+        [listdata]="listdata"
+        [pagination]="pagination"
+        [tableHeader]="tableHeader"
+        [ctxHight]="tbaleHeight"
+        [columnSlot]="{ status: status, customBtns: customBtns }"
+        [tableRowBtns]="tableRowBtns"
+        (operatClick)="operatClick($event)"
+        (pageSizeChange)="pageSizeChange($event)"
+        (pageIndexChange)="pageIndexChange($event)"
+      >
+        <ng-template #status let-row>
+          <span ngClass="status status_{{ row.status }}">{{ row.showStatus }}</span>
+        </ng-template>
+        <ng-template #customBtns let-row>
+          <li class="order-1" [ngClass]="{ 'ant-dropdown-menu-item': tableBtnType === 'group' }">
+            <a nz-button nzType="link" (click)="showDetail(row, row.changeType)">查看详情</a>
+          </li>
+          <li
+            class="order-2"
+            *ngIf="row.status === 'DOING_STATUS'"
+            [ngClass]="{ 'ant-dropdown-menu-item': tableBtnType === 'group' }"
+          >
+            <a nz-button nzType="link" (click)="showConfirm(1, row.organizationChangePlanId)">撤销</a>
+          </li>
+        </ng-template>
+      </vx-table>
+    </nz-spin>
   </div>
 </div>

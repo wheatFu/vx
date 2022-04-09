@@ -13,7 +13,7 @@ import { OrganizationService } from '../../service/organization.service'
       <span>{{ zoom }}%</span>
       <div class="img img-right" (click)="glassHandle(2)"></div>
     </div>
-    <div id="container"></div>
+    <div id="container" class="hidden"></div>
   `,
   styles: [
     `

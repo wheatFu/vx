@@ -1,15 +1,14 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core'
-import PerfectScrollbar from 'perfect-scrollbar'
 import { OrganizationService } from '../service/organization.service'
-import { ScrollBarHelper } from '../../../utils/scrollbar-helper'
 import { FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { NzMessageService, NzModalService } from 'ng-zorro-antd'
 import { downLoadFile } from '../../../utils/utils'
 import * as moment from 'moment'
 import { ChangeDetailModalComponent } from '../modals/change-detail-modal/change-detail-modal.component'
-import { DataState, CHANGE_TYPE_MAP_CHINESE, ChangeResData, UserOpts } from '../interfaces/organization.model'
+import { CHANGE_TYPE_MAP_CHINESE, ChangeResData, UserOpts } from '../interfaces/organization.model'
 import { BehaviorSubject } from 'rxjs'
 import { debounceTime, switchMap } from 'rxjs/operators'
+import { TableHeader } from '@shared/components/vx-table/vx-table.component'
 @Component({
   selector: 'app-change',
   templateUrl: './change.component.html',
@@ -18,7 +17,7 @@ import { debounceTime, switchMap } from 'rxjs/operators'
 export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
   validateForm!: FormGroup
   options = {
-    nzActive: true,
+    nzActive: false,
     nzHeader: '查询',
   }
 
@@ -28,16 +27,96 @@ export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
   selectLoading = false
 
   // table
-  scrollbar: PerfectScrollbar
-  tableScroll = { y: '500px' }
   listdata: any[] = []
-  pageState = DataState.LOADING
-  totalcount = 0
-  pagesize = 20
-  pagecount = 1
-  pageindex = 1
+  listLoading: boolean = false
+  pagination: any = {
+    totaCount: 0,
+    pageSize: 20,
+    pageIndex: 1,
+  }
+  // 表头
+  tableHeader: TableHeader[] = [
+    {
+      key: 'organizationCode',
+      name: '组织编码',
+      width: 120,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'organizationName',
+      name: '组织名称',
+      width: 160,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'changeType',
+      name: '变更类型',
+      width: 100,
+      type: '',
+      format: (row, code) => {
+        return code && row[code] ? CHANGE_TYPE_MAP_CHINESE[row[code]] : '-'
+      },
+      hide: false,
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'createBy',
+      name: '操作人',
+      width: 100,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+
+    {
+      key: 'createTime',
+      name: '操作时间',
+      width: 110,
+      type: '',
+      hide: false,
+      format: (row, code) => {
+        return code && row[code] ? moment(row[code]).format('YYYY-MM-DD HH:mm') : '-'
+      },
+      action: false,
+      sortField: '',
+    },
+    {
+      key: 'effectiveDate',
+      name: '生效时间',
+      width: 110,
+      type: '',
+      hide: false,
+      action: false,
+      format: (row, code) => {
+        return code && row[code] ? moment(row[code]).format('YYYY-MM-DD HH:mm') : '-'
+      },
+      sortField: '',
+    },
+    {
+      key: 'operation',
+      name: '操作',
+      width: 110,
+      type: '',
+      hide: false,
+      format: null,
+      action: false,
+      sortField: '',
+    },
+  ]
+
+  tbaleHeight = 0
   query = ''
-  tableClienHeight: number
   organizationUpdateTypes: Array<{ label: string; value: string }> = []
 
   constructor(
@@ -66,12 +145,11 @@ export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
         this.selectopts = res
         this.selectLoading = false
       })
+    this.loadData()
+    this.tbaleHeight = document.querySelector('.table-warp').clientHeight + 84
   }
 
-  ngAfterViewInit() {
-    this.tableClienHeight = this.elementRef.nativeElement.querySelector('.table-warp').clientHeight - 100
-    this.loadData()
-  }
+  ngAfterViewInit() {}
 
   /** 下拉 */
   onSearch(value: string): void {
@@ -82,39 +160,21 @@ export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * 加载grid
    */
-  loadData(extra?) {
-    this.pageState = DataState.LOADING
+  loadData(extra?: any) {
+    this.listLoading = true
     const params = {
-      page: { size: this.pagesize, current: this.pageindex },
+      page: { size: this.pagination.pageSize, current: this.pagination.pageIndex },
       ...extra,
     }
     this.orgService.getOrganizationChangeList(params).subscribe(res => {
+      this.listLoading = false
       if (res.result!.code === 0) {
         const { data, page } = res
-        this.pagecount = page!.size
-        this.totalcount = page!.total
-        this.listdata =
-          data.map(item => {
-            const { createTime, effectiveDate } = item
-            return {
-              ...item,
-              createTime: moment(createTime).format('YYYY/MM/DD HH:mm'),
-              effectiveDate: moment(effectiveDate).format('YYYY/MM/DD HH:mm'),
-            }
-          }) || []
-        if (this.listdata.length) {
-          this.pageState = DataState.EXIST_DATA
-          setTimeout(() => {
-            this.scrollbar = ScrollBarHelper.makeScrollbar(
-              this.elementRef.nativeElement.querySelector('.ant-table-body'),
-            )
-
-            this.tableScroll = {
-              y: this.tableClienHeight + 'px',
-            }
-          }, 1)
-        } else {
-          this.pageState = DataState.EMPTY
+        this.listdata = data
+        this.pagination = {
+          totaCount: page.total,
+          pageSize: page.size,
+          pageIndex: page.current,
         }
         this.changeDel.detectChanges()
       }
@@ -122,7 +182,7 @@ export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   getChangeTypes() {
     const { hasOwnProperty } = Object.prototype
-    if (this.organizationUpdateTypes.length) return this.organizationUpdateTypes
+    if (this.organizationUpdateTypes.length) return
     this.orgService.organizationUpdateTypeList().subscribe(resp => {
       const { data } = resp
       for (const key in data) {
@@ -156,7 +216,6 @@ export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
         : ['ORGANIZATION_CHANGE', 'ORGANIZATION_MERGE'].includes(changeType)
         ? 1000
         : 800,
-      nzWrapClassName: 'change-detail-box',
       nzClassName: 'change-detail-box',
       nzFooter: [
         {
@@ -175,7 +234,7 @@ export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
    * 跳转页数
    */
   pageIndexChange(newPage: number) {
-    this.pageindex = newPage
+    this.pagination.pageIndex = newPage
     this.loadData()
   }
 
@@ -183,26 +242,19 @@ export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
    * 每页显示的条数
    */
   pageSizeChange($event: number) {
-    this.pagesize = $event
-    this.pageindex = 1
+    this.pagination.pageSize = $event
+    this.pagination.pageIndex = 1
     setTimeout(() => {
       this.loadData()
     }, 0)
 
     this.elementRef.nativeElement.querySelector('.ant-table-body').scrollTop = 0
-    setTimeout(() => {
-      this.scrollbar.update()
-    }, 300)
   }
 
   /** table heght */
   initTableUI(ev: boolean) {
-    const height = ev ? this.tableClienHeight : this.tableClienHeight + 150
-
-    setTimeout(() => {
-      this.tableScroll = { y: height + 'px' }
-      this.scrollbar.update()
-    }, 100)
+    const height = document.querySelector('.table-warp').clientHeight
+    this.tbaleHeight = ev ? height - 152 : height + 152
   }
   queryUpdateHistory() {
     const { validateForm } = this
@@ -221,7 +273,7 @@ export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   exportChangeList() {
     const params = {
-      page: { size: this.pagesize, current: this.pageindex },
+      page: { size: this.pagination.pageSize, current: this.pagination.pageIndex },
     }
     this.orgService.exportChangeList(params).subscribe(resp => {
       // 获取文件名信息
@@ -230,10 +282,6 @@ export class ChangeComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
   ngOnDestroy() {
-    if (this.scrollbar) {
-      this.scrollbar.destroy()
-      this.scrollbar = null
-    }
     this.modal.closeAll()
   }
 }

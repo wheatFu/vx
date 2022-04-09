@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { _HttpClient } from '@knz/theme'
 import { Observable } from 'rxjs'
 import { HttpClient } from '@angular/common/http'
-import { filter, map } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { UserOpts } from '../interfaces/organization.model'
 
 @Injectable()
@@ -135,5 +135,11 @@ export class OrganizationService {
     const url = `/vx/organization/list/export`
     // 添加 observe 选项来告诉 HttpClient，想要完整的响应对象     responseType: 'blob' 表示返回的是文件流
     return this.nghttp.post(url, params, { responseType: 'blob', observe: 'response' })
+  }
+
+  /** 根据当前用户上下文，过滤出指定Table的数据字典及参数信息 */
+  getDict(tableName: string): Observable<any> {
+    const url = `/organization/data/dictionary/${tableName}`
+    return this.http.get(url)
   }
 }

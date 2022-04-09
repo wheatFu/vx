@@ -62,8 +62,8 @@ export class EditComponent implements OnInit, OnDestroy {
       effectiveDate: [new Date()],
     })
 
-    this.getOrgSelectOps('org_organization', 'type')
-    this.getOrgSelectOps('org_organization', 'status')
+    // this.getOrgSelectOps('org_organization', 'type')
+    // this.getOrgSelectOps('org_organization', 'status')
   }
 
   ngOnInit() {
@@ -90,6 +90,15 @@ export class EditComponent implements OnInit, OnDestroy {
           this.fillInfo(data)
         }
       })
+
+    /** 获取下拉数据 */
+    this.orgService.getDict('org_organization').subscribe(res => {
+      if (res.result.code === 0) {
+        const { data } = res
+        this.getOrgSelectOpsInData(data, 'org_organization', 'type')
+        this.getOrgSelectOpsInData(data, 'org_organization', 'status')
+      }
+    })
   }
 
   get username() {
@@ -113,6 +122,15 @@ export class EditComponent implements OnInit, OnDestroy {
   /** 获取下拉 */
   getOrgSelectOps(key: string, col: string) {
     const config = this.authService.getSelectSole(key, col)
+    const { configParamConfigValue: val } = config
+    if (val.length) {
+      this[col] = val
+    }
+  }
+
+  /** 获取下拉<中台接口改版> */
+  getOrgSelectOpsInData(data: any, key: string, col: string) {
+    const config = this.authService.getSelectInData(data, key, col)
     const { configParamConfigValue: val } = config
     if (val.length) {
       this[col] = val

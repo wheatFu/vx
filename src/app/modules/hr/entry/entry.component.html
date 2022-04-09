@@ -1,0 +1,115 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    人事管理
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    入职管理
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<div class="hr-mian">
+  <div class="top-bar">
+    <div class="serch-group">
+      <nz-input-group [nzSuffix]="suffixIconSearch" nzSearch>
+        <input type="text" nz-input placeholder="查询" (keyup.enter)="handleInputKeyup()" [(ngModel)]="query" />
+      </nz-input-group>
+      <ng-template #suffixIconSearch>
+        <span class="icon-ic_search" nzSearch (click)="handleInputKeyup()" style="cursor: pointer;"></span>
+      </ng-template>
+      <span class="query" *ngIf="false">高级查询</span>
+    </div>
+    <div class="btn-group">
+      <button nzType="primary" nz-button [routerLink]="['/hr/edit']" [queryParams]="{ type: 'add' }">
+        <span class="custom-icon icon-ic_add"></span>新建
+      </button>
+      <!--  (click)="exportOrganList()" -->
+      <button nzType="primary" nz-button nzGhost host-button>
+        <span class="custom-icon  icon-ic_input"></span>导入
+      </button>
+      <!--  (click)="exportOrganList()" -->
+      <button nzType="primary" nz-button nzGhost host-button>
+        <span class="custom-icon icon-ic_export"></span>导出
+      </button>
+      <button nzType="primary" nz-button nzGhost host-button *ngIf="false">
+        <span class="custom-icon icon-ic_setting"></span>
+        表格设置
+      </button>
+    </div>
+  </div>
+  <!-- table -->
+  <div class="table-warp">
+    <ng-template #empty>
+      <div class="table-empty">
+        <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
+        <div class="table-empty-img" *ngIf="pageState == 2"></div>
+      </div>
+    </ng-template>
+    <ng-container *ngIf="pageState === 3; else empty">
+      <div class="sv-panel-body">
+        <nz-table
+          #basicTable
+          class="table-theme-default quit-style"
+          [nzData]="listdata"
+          [nzLoading]="false"
+          [nzShowPagination]="false"
+          [nzPageSize]="pagesize"
+          [nzScroll]="{ y: 'calc(100vh - 280px)' }"
+        >
+          <thead>
+            <tr>
+              <th nzWidth="65px">序号</th>
+              <th nzWidth="100px">工号</th>
+              <th nzWidth="100px">姓名</th>
+              <th nzWidth="130px">部门</th>
+              <th nzWidth="110px">职位</th>
+              <th nzWidth="80px">性别</th>
+              <th nzWidth="110px">入职日期</th>
+              <th nzWidth="120px">手机</th>
+              <th nzWidth="120px">邮箱</th>
+              <th nzWidth="110px" style="min-width: 100px;">状态</th>
+              <th nzWidth="140px" style="min-width: 140px;">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dat of basicTable.data; index as i">
+              <td nzBreakWord>{{ i + 1 }}</td>
+              <td nzBreakWord>{{ dat?.employeeInfo?.code || '-' }}</td>
+              <td nzBreakWord>{{ dat?.employeeInfo?.name }}</td>
+              <td nzBreakWord>{{ dat?.employeeInfo?.organizationName || '-' }}</td>
+              <td nzBreakWord>{{ dat?.employeeInfo?.positionName || '-' }}</td>
+              <td nzBreakWord>{{ GENDER[dat?.employeeInfo?.gender] || '-' }}</td>
+              <td nzBreakWord>{{ (dat?.employeeInfo?.hireDate | date: 'yyyy-MM-dd') || '-' }}</td>
+              <td nzBreakWord>{{ dat?.employeeInfo?.mobile || '-' }}</td>
+              <td nzBreakWord>{{ dat?.employeeInfo?.email || '-' }}</td>
+              <td>
+                <span ngClass="status status_{{ dat.status }}">{{ dat.statusName }}</span>
+              </td>
+              <td style="min-width: 140px;">
+                <div class="btn-td-operat-group">
+                  <a
+                    nz-button
+                    nzType="link"
+                    [routerLink]="['/hr/edit/org_employee']"
+                    [queryParams]="{ type: 'entry', id: dat.id }"
+                    >办理入职</a
+                  >
+                  <a nz-button nzType="link" class="del" (click)="showConfirm(dat.id)">删除</a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+      <div class="sv-panel-footer" *ngIf="listdata.length">
+        <vx-pagination
+          [totalCount]="totalcount"
+          [(pageIndex)]="pageindex"
+          [(pageSize)]="pagesize"
+          (pageSizeChange)="pageSizeChange($event)"
+          (pageIndexChange)="pageIndexChange($event)"
+        >
+        </vx-pagination>
+      </div>
+    </ng-container>
+  </div>
+</div>

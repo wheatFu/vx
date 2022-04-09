@@ -1,0 +1,42 @@
+<div class="base-info">
+  <div class="upload-warp" *ngIf="urlKey === 'org_employee'">
+    <nz-upload
+      class="avatar-uploader"
+      nzListType="picture-card"
+      nzName="avatar"
+      [nzShowUploadList]="false"
+      [nzCustomRequest]="customRequst"
+      [nzBeforeUpload]="beforeUpload"
+      (nzChange)="handleChange($event)"
+      [nzDisabled]="formDisabled"
+    >
+      <img *ngIf="avatarUrl" [src]="avatarUrl" class="avatar" />
+
+      <div class="perch-box" *ngIf="!avatarUrl">
+        <i class="upload-icon" nz-icon [nzType]="'loading'" *ngIf="uploading; else perch"></i>
+        <ng-template #perch>
+          <img src="assets/images/header.png" />
+        </ng-template>
+      </div>
+
+      <div class="ant-upload-text" *ngIf="!formDisabled">
+        点击头像修改
+      </div>
+    </nz-upload>
+  </div>
+  <div class="form-warp">
+    <div class="mask" *ngIf="loading"><nz-spin nzSimple></nz-spin></div>
+    <ng-container *ngIf="!!dataConfig">
+      <app-dynamic-form
+        [dataConfig]="dataConfig"
+        [isRelated]="isRelated"
+        [saveLoading]="saveLoading"
+        [urlKey]="urlKey"
+        [formDisabled]="formDisabled"
+        [operat]="operat"
+        (save)="doSubmit($event)"
+        (cancel)="doCancel($event)"
+      ></app-dynamic-form>
+    </ng-container>
+  </div>
+</div>

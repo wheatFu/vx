@@ -1,0 +1,88 @@
+:host ::ng-deep {
+  .form-warp {
+    width: 100%;
+    min-height: calc(100% - 30px);
+    display: flex;
+    background: #fff;
+    padding: 30px 25px;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0px 4px 8px 0px rgba(96, 113, 223, 0.12);
+    border-radius: 2px;
+    form {
+      width: 100%;
+      padding-right: 5%;
+    }
+    .ant-input {
+      border: 1px solid #d0d3de;
+    }
+    nz-form-item {
+      margin-bottom: 0;
+    }
+    nz-form-label,
+    nz-form-control {
+      height: 64px;
+    }
+    .ant-calendar-picker {
+      width: 100%;
+    }
+    .ant-modal-footer {
+      border-top: 0;
+    }
+    .col-item {
+      margin-bottom: 28px;
+    }
+  }
+  nz-input-group {
+    width: 100%;
+  }
+  .org-icon {
+    color: #d0d3de;
+    cursor: pointer;
+
+    transition: all 0.2s;
+    &:hover {
+      color: #a4b0da;
+      font-size: 18px;
+    }
+  }
+}
+.modal-employee{
+   display: flex;
+   height:460px;
+  .left{
+    border: 2px solid #ddd;
+    background-color: #fff;
+    width:260px;
+    border-radius: 2px;
+  }
+  .right{
+    flex: 1;
+    border: 2px solid #ddd;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+    .search-form{
+      flex:none;
+    }
+    .employee-table-warp{
+      height: calc(100% - 88px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      flex:auto;
+    }
+  }
+}
+.special-footer{
+  margin-bottom: 10px;
+}
+::ng-deep .organization-box{
+  .ant-modal-body {
+    max-height:400px;
+    overflow-y: scroll;
+  }
+}

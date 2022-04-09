@@ -1,0 +1,45 @@
+.basic_sidebar_log {
+  display: flex;
+  padding: 30px 20px 8px 20px;
+  justify-content: space-between;
+  .basic_sidebar_log_link {
+    width: 120px;
+    height: 21px;
+    overflow: hidden;
+    display: inline-block;
+    & > img {
+      width: 100%;
+    }
+  }
+  .basic_sidebar_nav-item {
+    cursor: pointer;
+    padding-top: 4px;
+    height: 21px;
+    & > .anticon-menu-fold {
+      color: #6e86fe;
+      font-size: 16px;
+    }
+  }
+}
+
+::ng-deep .knz-default__collapsed {
+  .basic_sidebar_log {
+    display: flex;
+    padding-top: 24px;
+    justify-content: center;
+  }
+  .basic_sidebar_nav-item {
+    display: flex;
+    -webkit-box-pack: center;
+    justify-content: center;
+    & > .anticon-menu-unfold {
+      color: #626262;
+      font-size: 20px;
+    }
+    &:hover {
+      & > .anticon-menu-unfold {
+        color: #6e86fe;
+      }
+    }
+  }
+}

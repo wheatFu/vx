@@ -1,0 +1,57 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    休假管理
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    休假额度
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<div class="mian flex-v">
+  <div class="top-bar">
+    <app-search-input [placeholder]="'查询'" [(ngModel)]="query" (keyUp)="handleInputKeyup()"></app-search-input>
+    <div class="btn-group">
+      <button nzType="primary" nz-button [routerLink]="['/hr/edit']" [queryParams]="{ type: 'add' }">
+        <span class="custom-icon icon-ic_add"></span>新建
+      </button>
+      <button nzType="primary" nz-button nzGhost host-button>
+        <span class="custom-icon  icon-ic_input"></span>导入
+      </button>
+      <button nzType="primary" nz-button nzGhost host-button>
+        <span class="custom-icon icon-ic_export"></span>导出
+      </button>
+    </div>
+  </div>
+
+  <!-- table -->
+  <div class="table-warp w-100 flex-justify-between">
+    <nz-spin [nzSpinning]="listLoading">
+      <vx-table
+        [listdata]="listdata"
+        [showPagination]="true"
+        [pagination]="pagination"
+        [ellipsis]="true"
+        [tableHeader]="tableHeader"
+        [ctxHight]="getTbaleHeight"
+        [columnSlot]="{ status: status, customBtns: customBtns }"
+        [tableRowBtns]="tableRowBtns"
+        [checkType]="'checkbox'"
+        [btnType]="tableBtnType"
+        (operatClick)="operatClick($event)"
+        (checkChange)="checkChange($event)"
+        (pageSizeChange)="pageSizeChange($event)"
+        (pageIndexChange)="pageIndexChange($event)"
+      >
+        <ng-template #status let-row>
+          <span ngClass="status status_{{ row.status }}">{{ row.status === 'ENABLE' ? '已启用' : '已禁用' }}</span>
+        </ng-template>
+
+        <ng-template #customBtns let-row>
+          <li class="order-2" [ngClass]="{ 'ant-dropdown-menu-item': tableBtnType === 'group' }">
+            <a nz-button nzType="link" (click)="myalert(11)">自定义</a>
+          </li>
+        </ng-template>
+      </vx-table>
+    </nz-spin>
+  </div>
+</div>

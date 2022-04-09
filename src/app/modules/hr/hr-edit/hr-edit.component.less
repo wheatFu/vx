@@ -1,0 +1,31 @@
+:host ::ng-deep {
+  .edit-main {
+    width: 100%;
+    display: flex;
+    height: calc(100% - 42px); // 面包屑
+    background: #ffffff;
+    .left {
+      width: 15vw;
+      min-width: 200px;
+      max-width: 280px;
+      box-shadow: 0px 4px 8px 0px rgba(96, 113, 223, 0.12);
+      height: 100%;
+      overflow-y: auto;
+      .ant-tabs .ant-tabs-left-bar .ant-tabs-tab {
+        text-align: left;
+        height: 44px;
+        margin-bottom: 0;
+      }
+      .ant-tabs .ant-tabs-left-bar .ant-tabs-ink-bar {
+        left: 1px;
+      }
+      .ant-tabs-nav .ant-tabs-tab-active {
+        background: #edf0ff;
+        color: #6373da;
+      }
+    }
+    .right {
+      flex: 1;
+    }
+  }
+}

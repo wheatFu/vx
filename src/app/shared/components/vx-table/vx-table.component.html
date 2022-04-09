@@ -1,0 +1,139 @@
+<nz-table
+  #basicTable
+  class="table-theme-default"
+  [nzShowPagination]="false"
+  [nzData]="listdata"
+  nzLoading="false"
+  [nzPageSize]="pagination.pageSize"
+  [nzScroll]="{ x: tableWidth + 'px', y: tableHeight + 'px' }"
+  (nzCurrentPageDataChange)="onCurrentPageDataChange($event)"
+>
+  <thead>
+    <tr>
+      <!-- checkbox -->
+      <th
+        *ngIf="showCheckbox"
+        nzWidth="45px"
+        nzShowCheckbox
+        nzLeft="0px"
+        [nzChecked]="checked"
+        [nzIndeterminate]="indeterminate"
+        (nzCheckedChange)="allChecked($event)"
+      ></th>
+
+      <!-- radio -->
+      <th *ngIf="showRadio" nzLeft="0px" nzWidth="45px"></th>
+
+      <th nzWidth="70px" [nzLeft]="showCheckbox || showRadio ? '45px' : '0px'">序号</th>
+      <ng-container *ngFor="let th of tableHeader; let i = index">
+        <th *ngIf="th.key !== 'operation'" [nzLeft]="getLeft(th.key)" [nzWidth]="th.width + 'px'">
+          {{ th.name }}
+        </th>
+
+        <th
+          *ngIf="th.key === 'operation' && !th.hide"
+          [nzWidth]="operatWith + 'px'"
+          [nzRight]="th.pin === 'right' ? '0px' : null"
+        >
+          操作
+        </th>
+      </ng-container>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let dat of basicTable.data; index as thi">
+      <!-- checkbox -->
+      <td
+        *ngIf="showCheckbox"
+        nzLeft="0px"
+        nzShowCheckbox
+        [nzChecked]="setOfCheckedId.has(dat.id)"
+        [nzDisabled]="dat.disabled"
+        (nzCheckedChange)="onItemChecked(dat.id, $event)"
+      ></td>
+
+      <!-- radio -->
+      <td *ngIf="showRadio" nzLeft="0px" class="table-radio">
+        <label
+          nz-radio
+          nzWidth="45px"
+          [(ngModel)]="dat.selected"
+          [nzDisabled]="dat.disabled"
+          (ngModelChange)="onItemSelected(dat.id)"
+        ></label>
+      </td>
+
+      <td [nzLeft]="showCheckbox || showRadio ? '45px' : '0px'">{{ thi + 1 }}</td>
+      <ng-container *ngFor="let td of tableHeader; let tdi = index">
+        <td
+          *ngIf="td.key !== 'operation'"
+          [nzLeft]="getLeft(td['key'])"
+          [ngStyle]="{ 'max-width.px': td.width }"
+          [ngClass]="{ tdEllipsis: ellipsis, tdBreakWord: !ellipsis }"
+          [title]="td.format ? td.format(dat, td.key) : dat[td.key]"
+        >
+          <ng-template *ngIf="!!td.slot; then slotColumn; else defaultColumn"></ng-template>
+          <ng-template #slotColumn>
+            <ng-container *ngTemplateOutlet="columnSlot[td.slot]; context: { $implicit: dat, td: td }"></ng-container>
+          </ng-template>
+
+          <ng-template #defaultColumn>
+            {{ td.format ? td.format(dat, td.key) : dat[td.key] }}
+          </ng-template>
+        </td>
+        <td
+          *ngIf="td.key === 'operation' && !td.hide"
+          [nzRight]="td.pin === 'right' ? '0px' : null"
+          class="btn-td-operat"
+        >
+          <div class="btn-td-operat-group flex-h" *ngIf="btnType !== 'group'; else other">
+            <ul>
+              <ng-container *ngFor="let key of btnKey">
+                <li *ngIf="showBtn(dat, key)" [style.order]="getOrder(key)">
+                  <a nz-button nzType="link" class="{{ key }} ant-btn" (click)="handleBtnClick(dat, key)">{{
+                    tranbtn(key)
+                  }}</a>
+                </li>
+              </ng-container>
+
+              <!-- 自定义btn -->
+              <ng-container *ngIf="!!columnSlot.customBtns">
+                <ng-container *ngTemplateOutlet="columnSlot.customBtns; context: { $implicit: dat }"></ng-container>
+              </ng-container>
+            </ul>
+          </div>
+
+          <!-- btn group -->
+          <ng-template #other>
+            <a nz-dropdown [nzDropdownMenu]="menu" class="menu">
+              <i nz-icon nzType="small-dash" nzTheme="outline"></i>
+            </a>
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+              <ul nz-menu nzSelectable>
+                <ng-container *ngFor="let key of btnKey">
+                  <li nz-menu-item [style.order]="getOrder(key)" *ngIf="showBtn(dat, key)">
+                    <a nz-button nzType="link" class="{{ key }} ant-btn" (click)="handleBtnClick(dat, key)">{{
+                      tranbtn(key)
+                    }}</a>
+                  </li>
+                </ng-container>
+                <ng-container *ngIf="!!columnSlot.customBtns">
+                  <ng-container *ngTemplateOutlet="columnSlot.customBtns; context: { $implicit: dat }"></ng-container>
+                </ng-container>
+              </ul>
+            </nz-dropdown-menu>
+          </ng-template>
+        </td>
+      </ng-container>
+    </tr>
+  </tbody>
+</nz-table>
+<vx-pagination
+  *ngIf="listdata.length && showPagination"
+  [totalCount]="pagination.totaCount"
+  [(pageIndex)]="pagination.pageIndex"
+  [(pageSize)]="pagination.pageSize"
+  (pageSizeChange)="pageSizeChange.emit($event)"
+  (pageIndexChange)="pageIndexChange.emit($event)"
+>
+</vx-pagination>

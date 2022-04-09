@@ -1,0 +1,78 @@
+.detail {
+  &-top {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 10px;
+    &-left {
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #626262;
+      line-height: 20px;
+    }
+  }
+}
+
+.ant-modal-footer {
+  .ant-btn-primary {
+    display: none;
+  }
+}
+.entry-box{
+  display: flex;
+  .info-box{
+    width: 120px;
+    flex: none;
+    .avatar-style{
+      width: 94px;
+      height:94px;
+      border-radius: 50%;
+    }
+  }
+}
+.data-box {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  flex: auto;
+  .new-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 50%;
+    .label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #626262;
+      line-height: 20px;
+      margin-right: 30px;
+      min-width: 84px;
+    }
+    .state-label {
+      color: #02a7f0;
+      font-size: 16px;
+    }
+    .value {
+      font-size: 14px;
+      font-weight: 400;
+      color: #697074;
+      line-height: 20px;
+      flex: auto;
+    }
+  }
+  .new-item-max {
+    width: 100%;
+  }
+}
+::ng-deep .detail-box {
+  .ant-modal-footer {
+    border-top: 0;
+  }
+  .ant-modal-header {
+    border-bottom: 1px dashed #c4c8d5;
+  }
+}
+::ng-deep .ant-table-placeholder {
+  border-bottom: 0;
+}

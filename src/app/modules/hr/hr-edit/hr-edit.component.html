@@ -1,0 +1,22 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    人事管理
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    <a (click)="reditTo()">{{ retnTitle }}</a>
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    {{ title[operat] }}
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<div class="edit-main">
+  <div class="left" *ngIf="tabs.length > 1">
+    <nz-tabset [nzTabPosition]="'left'" [nzSelectedIndex]="pos" [nzTabBarStyle]="{ width: '100%', 'border-right': 0 }">
+      <nz-tab *ngFor="let i of tabs" [nzTitle]="i.tab" (nzClick)="to(i)"></nz-tab>
+    </nz-tabset>
+  </div>
+  <div class="right">
+    <router-outlet></router-outlet>
+  </div>
+</div>

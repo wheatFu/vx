@@ -1,0 +1,246 @@
+<!--<app-breadcrumb></app-breadcrumb>-->
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    职位信息
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<div class="main">
+  <div class="left" *ngIf="isRelated">
+    <div class="layout">
+      <span>显示层级</span>
+      <nz-select [nzDropdownMatchSelectWidth]="false" [(ngModel)]="levelCount">
+        <nz-option *ngFor="let item of list" [nzValue]="item.value" [nzLabel]="item.label"> </nz-option>
+      </nz-select>
+    </div>
+    <div class="tree-warp tree">
+      <app-custom-tree
+        [nodeOpts]="nodeOpts"
+        [expandAll]="true"
+        (node)="getCurrentNode($event)"
+      ></app-custom-tree>
+    </div>
+  </div>
+  <div class="right" [style.background]="'inherit'">
+    <div class="right-top">
+      <div class="right-menu">
+        <nz-input-group [nzSuffix]="suffixIconSearch" nzSearch>
+          <input type="text" nz-input placeholder="查询" [(ngModel)]="query" (ngModelChange)='handleInputKeyup()'/>
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <span class="icon-ic_search" nzSearch (click)="handleInputKeyup()"></span>
+        </ng-template>
+<!--        <span class="query" (click)="handleInputKeyup()">高级查询</span>-->
+      </div>
+      <div class="right-setting">
+        <ng-container>
+          <button nzType="primary" nz-button (click)="editOrAddPosition()">
+            <span class="custom-icon icon-ic_add"></span>新建
+          </button>
+        </ng-container>
+
+        <button nzType="primary" nz-button nzGhost host-button (click)="exportPosition()">
+          <span class="custom-icon icon-ic_export"></span>导出
+        </button>
+        <button nzType="primary" nz-button nzGhost host-button>
+          <span class="custom-icon icon-ic_setting"></span>
+          表格设置
+        </button>
+        <ng-container *ngIf="isRelated">
+          <nz-radio-group
+            nzButtonStyle="solid"
+            class="btn-radio"
+            [(ngModel)]="toggleUI"
+            (ngModelChange)="changeToggleUI(toggleUI)"
+          >
+            <label nz-radio-button nzValue="A"
+              ><span class="icon-ic_card_danxuan "
+                ><span class="path1"></span><span class="path2"></span><span class="path3"></span
+                ><span class="path4"></span><span class="path5"></span><span class="path6"></span></span
+            ></label>
+            <label nz-radio-button nzValue="B"><span class="icon-ic_MindMap_verticel"></span></label>
+          </nz-radio-group>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- table -->
+    <div class="table-warp" *ngIf="toggleUI === 'A'" #tableWarp>
+      <ng-container *ngIf="pageState != 3">
+        <div class="empty">
+          <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
+          <div class="empty-img" *ngIf="pageState == 2"></div>
+        </div>
+      </ng-container>
+      <div class="sv-panel-body" *ngIf="pageState === 3">
+        <nz-table
+          #basicTable
+          class="table-theme-default quit-style"
+          [nzData]="listdata"
+          [nzLoading]="false"
+          [nzShowPagination]="false"
+          [nzPageSize]="pagesize"
+          [nzScroll]="tableScroll"
+        >
+          <thead>
+            <tr>
+              <th nzWidth="80px">序号</th>
+              <th nzWidth="120px">职位编码</th>
+              <th nzWidth="160px">职位名称</th>
+              <th nzWidth="160px" *ngIf="isRelated">上级职位</th>
+              <th nzWidth="120px" *ngIf="isRelated">主管职位</th>
+              <th nzWidth="120px">职位状态</th>
+              <th nzWidth="140px">在职员工数</th>
+              <th nzWidth="210px">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dat of basicTable.data; index as i">
+              <td>{{ i + 1 }}</td>
+              <td>{{ dat.code }}</td>
+              <td>{{ dat.name }}</td>
+              <td *ngIf="isRelated">{{ dat.superior?.name }}</td>
+              <td *ngIf="isRelated">
+                {{ dat.isSupervisor ? '是' : '否' }}
+              </td>
+              <td>
+                <span ngClass="status status_{{ dat.status }}">{{
+                  dat.status === 'ENABLE' ? '已启用' : '已禁用'
+                }}</span>
+              </td>
+              <td>
+                <div class="btn-td-operat-group">
+                  <a nz-button nzType="link" (click)="queryEmployList(dat.id)">{{ dat.employeeNum }}</a>
+                </div>
+              </td>
+              <td>
+                <div class="btn-td-operat-group">
+                  <a nz-button nzType="link" (click)="editOrAddPosition(dat)">编辑</a>
+                  <a nz-button nzType="link" (click)="enableOrNot(dat)">{{
+                    dat.status === 'ENABLE' ? '禁用' : '启用'
+                  }}</a>
+                  <a nz-button nzType="link" class="del" (click)="deletePosition(dat)">删除</a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+      <div class="sv-panel-footer" *ngIf="listdata.length && pageState === 3">
+        <vx-pagination
+          [totalCount]="totalcount"
+          [(pageIndex)]="pageindex"
+          [(pageSize)]="pagesize"
+          (pageSizeChange)="pageSizeChange($event)"
+          (pageIndexChange)="pageIndexChange($event)"
+        >
+        </vx-pagination>
+      </div>
+    </div>
+    <!--组织架构图-->
+    <ng-container *ngIf="toggleUI === 'B'">
+      <div class="mind-warp">
+        <ng-container *ngIf="!hasGraphData">
+          <div class="empty">
+            <div class="empty-img"></div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="graphTabs.length > 1">
+          <ul nz-menu nzMode="horizontal" class='custom-menu'>
+            <li nz-menu-item [nzSelected]='tab.selected'   (click)="toggleTab(tab.id)" *ngFor="let tab of graphTabs">
+              {{ tab.name }}职位架构图
+            </li>
+          </ul>
+        </ng-container>
+        <app-tree-graph
+          [expandLevel]="levelCount"
+          [data]="graphSource"
+          style="height:100%;"
+          (zoomEmit)="handleZoom($event)"
+          *ngIf="hasGraphData"
+        ></app-tree-graph>
+      </div>
+    </ng-container>
+  </div>
+</div>
+<nz-modal
+  [(nzVisible)]="isEnableVisible"
+  nzTitle="{{ selectedTableItem?.status === 'ENABLE' ? '禁用' : '启用' }}提示"
+  [nzWidth]="334"
+  (nzOnCancel)="handleEnableOrDisableCancel()"
+  (nzOnOk)="handleEnableOrDisableOk()"
+  [nzClassName]="'is-able-box'"
+  [nzClosable]="false"
+  [nzMaskClosable]="false"
+>
+  <div class="enable-warp">
+    <div class="sub-title">是否确定{{ selectedTableItem?.status === 'ENABLE' ? '禁用' : '启用' }}？</div>
+  </div>
+</nz-modal>
+<nz-modal
+  [(nzVisible)]="isDeleteVisible"
+  [nzClosable]="false"
+  [nzWidth]="334"
+  [nzClassName]="'is-delete-box'"
+  (nzOnCancel)="isDeleteVisible = false"
+  (nzOnOk)="handleDeleteOk()"
+  [nzMaskClosable]="false"
+>
+  <div class="delete-modal-warp">
+    <span class="icon icon-ic_remind"></span>
+    <div class="delete-tips">是否确认要删除？</div>
+  </div>
+</nz-modal>
+<nz-modal
+  [(nzVisible)]="isEmployeeListVisible"
+  nzTitle="在职员工数"
+  [nzClosable]="false"
+  [nzWidth]="1000"
+  [nzClassName]="'employee-box'"
+  (nzOnCancel)="isEmployeeListVisible = false"
+  [nzMaskClosable]="false"
+  nzCancelText="关闭"
+>
+  <div class="employee-warp">
+    <div class="sv-panel-body">
+      <nz-table
+        #employeeTable
+        class="table-theme-default quit-style"
+        [nzData]="employeeListData"
+        [nzLoading]="false"
+        [nzShowPagination]="false"
+        [nzPageSize]="employeePageSize"
+        [nzScroll]="{ y: '400px' }"
+      >
+        <thead>
+          <tr>
+            <th nzWidth="60px">序号</th>
+            <th nzWidth="120px">工号</th>
+            <th nzWidth="160px">姓名</th>
+            <th nzWidth="160px">部门</th>
+            <th nzWidth="160px">职位</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dat of employeeTable.data; index as i">
+            <td>{{ i + 1 }}</td>
+            <td>{{ dat.code }}</td>
+            <td>{{ dat.name }}</td>
+            <td>{{ dat.organizationName }}</td>
+            <td>{{ dat.positionName }}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+    <div class="sv-panel-footer" *ngIf="employeeListData.length">
+      <vx-pagination
+        [totalCount]="employeeTotalCount"
+        [(pageIndex)]="employPageIndex"
+        [(pageSize)]="employeePageSize"
+        (pageSizeChange)="pageSizeEmployeeChange($event)"
+        (pageIndexChange)="pageIndexEmployeeChange($event)"
+      >
+      </vx-pagination>
+    </div>
+  </div>
+</nz-modal>

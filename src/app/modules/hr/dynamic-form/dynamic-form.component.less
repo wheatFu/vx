@@ -1,0 +1,29 @@
+.form-warp {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  nz-form-control {
+    height: 60px;
+    nz-input-group {
+      width: 100%;
+    }
+    .org-icon {
+      color: #d0d3de;
+      cursor: pointer;
+
+      transition: all 0.5s;
+      &:hover {
+        color: #7491e7;
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+
+::ng-deep form .ant-select,
+::ng-deep form .ant-cascader-picker {
+  width: 100% !important;
+}

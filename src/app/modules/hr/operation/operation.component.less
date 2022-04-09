@@ -1,0 +1,62 @@
+.regular-main {
+  display: flex;
+  height: calc(100% - 30px);
+  background: #fff;
+  border-radius: 2px;
+  padding: 30px;
+  .left {
+    display: flex;
+    flex-direction: column;
+    width: 90px;
+    flex: none;
+    align-items: center;
+    .avatar-img {
+      width: 94px;
+      height: 94px;
+      border-radius: 50%;
+    }
+  }
+  .right-form-warp {
+    flex: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    nz-form-control {
+      height: 60px;
+      nz-input-group {
+        width: 100%;
+      }
+      .org-icon {
+        color: #d0d3de;
+        cursor: pointer;
+
+        transition: all 0.5s;
+        &:hover {
+          color: #7491e7;
+          font-size: 18px;
+        }
+      }
+    }
+    .ant-input {
+      border: 1px solid #d0d3de;
+    }
+    .regular-footer {
+      ::ng-deep {
+        nz-form-control {
+          height: 32px;
+        }
+      }
+    }
+
+    nz-form-item {
+      margin-bottom: 0;
+    }
+    nz-form-label,
+    nz-form-control {
+      height: 64px;
+    }
+    .ant-calendar-picker {
+      width: 100%;
+    }
+  }
+}

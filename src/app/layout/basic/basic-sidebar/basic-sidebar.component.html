@@ -1,0 +1,11 @@
+<div class="knz-default__aside-inner">
+  <div class="basic_sidebar_log">
+    <a [routerLink]="['/']" class="basic_sidebar_log_link">
+      <img class="knz-default__header-logo" src="./assets/images/basic_logo.png" />
+    </a>
+    <div class="basic_sidebar_nav-item" (click)="toggleCollapsedSidebar()">
+      <i nz-icon nzType="menu-{{ settings.layout.collapsed ? 'unfold' : 'fold' }}"></i>
+    </div>
+  </div>
+  <sidebar-nav class="d-block py-lg"></sidebar-nav>
+</div>

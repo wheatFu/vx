@@ -1,0 +1,82 @@
+.relation-graph-main {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 42px); // 减去面包屑的高度
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    .employee-info-box{
+      display: flex;
+      justify-items: center;
+      .avatar-style{
+        width: 42px;
+        height:42px;
+        margin-right:5px;
+      }
+    }
+    ::ng-deep .tab-box{
+      .ant-menu{
+        background: inherit !important;
+      }
+      .ant-menu-horizontal{
+        border-bottom: none;
+      }
+    }
+    .right-setting {
+      .save-btn {
+        background: linear-gradient(90deg, #6272d9 0%, #6e8be5 100%) !important;
+        box-shadow: 0px 2px 6px 0px rgba(110, 139, 229, 0.7);
+        border-radius: 3px;
+        border: none;
+      }
+      padding-top: 2px;
+      .custom-icon {
+        margin-right: 3px;
+      }
+    }
+  }
+  .graph-warp{
+    flex: auto;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+.empty {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  // background: #fff;
+  .empty-img {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 583px;
+    height: 368px;
+    background: url('../../../../assets/images/image-empty.png') no-repeat center;
+    &:lang(en) {
+      background: url('../../../../assets/images/image-empty-en.png') no-repeat center;
+    }
+
+    &:lang(zh-CN) {
+      background: url('../../../../assets/images/image-empty.png') no-repeat center;
+    }
+  }
+  nz-spin {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 200px;
+    height: 100px;
+    text-align: center;
+  }
+}

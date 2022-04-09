@@ -1,0 +1,131 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    <a>人事管理</a>
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    <a [routerLink]="'/hr/inservice'">在职员工管理</a>
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    {{ operation }}
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+<div class="regular-main">
+  <div class="left">
+    <!--根据性别判断使用哪张默认的图像-->
+    <img [src]="employInfo?.profile" class="avatar-img" />
+    <label>{{ employInfo?.name }}</label>
+    <label>{{ employInfo?.positionName }}</label>
+    <label>{{ employInfo?.organizationName }}</label>
+  </div>
+  <div class="right-form-warp">
+    <form nz-form [formGroup]="validateForm">
+      <ng-container *ngIf="operationType === 'regular'">
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSpan]="3" [nzNoColon]="true">转正类型</nz-form-label>
+          <nz-form-control [nzSpan]="9">
+            <nz-select formControlName="regularType" (click)="getRegularTypes()">
+              <nz-option
+                *ngFor="let option of regularTypes"
+                [nzLabel]="option.label"
+                [nzValue]="option.value"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true">转正日期</nz-form-label>
+          <nz-form-control [nzSpan]="9">
+            <nz-date-picker formControlName="regularDate" [nzAllowClear]="false"></nz-date-picker>
+          </nz-form-control>
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true">转正评价</nz-form-label>
+          <nz-form-control [nzSm]="21" [nzXs]="24">
+            <textarea formControlName="regularComments" nz-input rows="6" placeholder="请输入内容..."></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </ng-container>
+      <ng-container *ngIf="operationType === 'transfer'">
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSpan]="3" [nzNoColon]="true">
+            调动后部门
+          </nz-form-label>
+          <nz-form-control [nzSpan]="9">
+            <nz-input-group
+              [nzSuffix]="isRelated ? selectPosAutoFill : organization.value ? OrganIconClear : OrganIconAdd"
+            >
+              <input type="text" nz-input readonly formControlName="organizationName" #organization />
+            </nz-input-group>
+          </nz-form-control>
+          <ng-template #OrganIconAdd>
+            <i nz-icon nzType="plus-circle" class="org-icon" nzTheme="outline" (click)="addOrganization()"></i>
+          </ng-template>
+          <ng-template #OrganIconClear>
+            <i nz-icon nzType="close" class="org-icon" nzTheme="outline" (click)="clearOrganization()"></i>
+          </ng-template>
+          <ng-template #selectPosAutoFill></ng-template>
+          <nz-form-label nzRequired [nzSpan]="3" [nzNoColon]="true">调动后职位</nz-form-label>
+          <nz-form-control [nzSpan]="9">
+            <nz-input-group [nzSuffix]="self.value ? PosIconClear : PosIconAdd">
+              <input type="text" nz-input readonly formControlName="positionName" #self placeholder="请选择" />
+            </nz-input-group>
+          </nz-form-control>
+          <ng-template #PosIconAdd>
+            <i nz-icon nzType="plus-circle" class="org-icon" nzTheme="outline" (click)="addPosition()"></i>
+          </ng-template>
+          <ng-template #PosIconClear>
+            <i nz-icon nzType="close" class="org-icon" nzTheme="outline" (click)="clearPosition()"></i>
+          </ng-template>
+          <nz-form-label nzRequired [nzSpan]="3" [nzNoColon]="true">调动后汇报人</nz-form-label>
+          <nz-form-control [nzSpan]="9" nzErrorTip="组织名称不能为空">
+            <nz-input-group [nzSuffix]="reporter.value ? SeniorIconClear : SeniorIconAdd">
+              <input type="text" nz-input readonly formControlName="reportToName" #reporter />
+            </nz-input-group>
+          </nz-form-control>
+          <ng-template #SeniorIconAdd>
+            <i nz-icon nzType="plus-circle" class="org-icon" nzTheme="outline" (click)="addReportTo()"></i>
+          </ng-template>
+          <ng-template #SeniorIconClear>
+            <i nz-icon nzType="close" class="org-icon" nzTheme="outline" (click)="clearReportTo()"></i>
+          </ng-template>
+        </nz-form-item>
+      </ng-container>
+      <ng-container *ngIf="operationType === 'resign'">
+        <nz-form-item>
+          <nz-form-label nzRequired [nzSpan]="3" [nzNoColon]="true">
+            离职类型
+          </nz-form-label>
+          <nz-form-control [nzSpan]="9">
+            <nz-select formControlName="resignType" (click)="getOffServiceTypes()">
+              <nz-option
+                *ngFor="let option of resignTypes"
+                [nzLabel]="option.label"
+                [nzValue]="option.value"
+              ></nz-option>
+            </nz-select>
+          </nz-form-control>
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true">离职日期</nz-form-label>
+          <nz-form-control [nzSpan]="9">
+            <nz-date-picker formControlName="resignDate" [nzAllowClear]="false"></nz-date-picker>
+          </nz-form-control>
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true">离职原因</nz-form-label>
+          <nz-form-control [nzSm]="21" [nzXs]="24">
+            <textarea formControlName="resignReason" nz-input rows="6" placeholder="请输入内容..."></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </ng-container>
+    </form>
+    <div class="regular-footer">
+      <nz-form-item>
+        <nz-form-control [nzOffset]="3" [nzSpan]="9">
+          <button
+            nzType="primary"
+            nz-button
+            (click)="save()"
+            [nzLoading]="http.loading"
+            [disabled]="!validateForm.valid"
+          >
+            保存
+          </button>
+          <button nzType="primary" nz-button nzGhost host-button (click)="doCancel()">取消</button>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+</div>

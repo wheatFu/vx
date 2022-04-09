@@ -1,0 +1,15 @@
+<div class="base-info">
+  <div class="mask" *ngIf="loading"><nz-spin nzSimple></nz-spin></div>
+  <ng-container *ngIf="!!dataConfig">
+    <app-dynamic-form
+      [dataConfig]="dataConfig"
+      [isRelated]="isRelated"
+      [saveLoading]="saveLoading"
+      [urlKey]="urlKey"
+      [formDisabled]="formDisabled"
+      [operat]="operat"
+      (save)="doSubmit($event)"
+      (cancel)="doCancel($event)"
+    ></app-dynamic-form>
+  </ng-container>
+</div>

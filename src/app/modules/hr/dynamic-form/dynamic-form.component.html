@@ -1,0 +1,151 @@
+<div class="form-warp">
+  <form nz-form [formGroup]="baseForm" class="base-form">
+    <nz-form-item>
+      <ng-container *ngFor="let item of controls">
+        <ng-container [ngSwitch]="item.controlType">
+          <nz-form-label [nzSpan]="3" [nzRequired]="item.required" [nzNoColon]="true">{{ item.label }}</nz-form-label>
+          <nz-form-control [nzSpan]="9" [nzErrorTip]="ruleErrorTip">
+            <input
+              *ngSwitchCase="'textbox'"
+              nz-input
+              [readonly]="item.readOnly ? 'readonly' : undefined"
+              placeholder="请输入{{ item.label }}"
+              [formControlName]="item.key"
+              (input)="onInput(item.key)"
+              maxlength="item.length"
+            />
+
+            <nz-input-number
+              *ngSwitchCase="'number'"
+              nz-input
+              [formControlName]="item.key"
+              [nzStep]="item.type"
+              nzPlaceHolder="请输入{{ item.label }}"
+              [nzPrecision]="item.precision"
+            ></nz-input-number>
+
+            <textarea
+              *ngSwitchCase="'textarea'"
+              nz-input
+              [formControlName]="item.key"
+              maxlength="item.length"
+              [readonly]="item.readOnly ? 'readonly' : undefined"
+              [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+            ></textarea>
+
+            <nz-year-picker *ngSwitchCase="'date_y'" [formControlName]="item.key" [nzFormat]="'YYYY'"></nz-year-picker>
+
+            <nz-month-picker
+              *ngSwitchCase="'date_ym'"
+              [nzFormat]="'YYYY-MM'"
+              [formControlName]="item.key"
+            ></nz-month-picker>
+
+            <nz-date-picker
+              *ngSwitchCase="'date_ymd'"
+              [formControlName]="item.key"
+              [nzDisabled]="item.key === 'leaveDate' && status.value === 'INSERVICE'"
+            ></nz-date-picker>
+
+            <nz-date-picker nzShowTime *ngSwitchCase="'date_datetime'" [formControlName]="item.key"></nz-date-picker>
+
+            <nz-time-picker
+              *ngSwitchCase="'date_time'"
+              [formControlName]="item.key"
+              nzFormat="HH:mm:ss"
+            ></nz-time-picker>
+
+            <!-- 下拉 -->
+            <ng-container *ngSwitchCase="'normal_param'">
+              <nz-select
+                [nzDropdownMatchSelectWidth]="false"
+                nzPlaceHolder="请选择..."
+                nzAllowClear
+                *ngIf="!(item.type === 'MULTIPLE_CHOICE')"
+                [formControlName]="item.key"
+                (ngModelChange)="onSelectChange(item.key, $event)"
+                [nzDisabled]="item.isEditDisabled"
+              >
+                <nz-option
+                  *ngFor="let option of item.selectionList"
+                  [nzValue]="option.id"
+                  [nzLabel]="option.name"
+                ></nz-option>
+              </nz-select>
+
+              <nz-select
+                [nzDropdownMatchSelectWidth]="false"
+                *ngIf="item.type === 'MULTIPLE_CHOICE'"
+                [nzMode]="'tags'"
+                [formControlName]="item.key"
+                nzPlaceHolder="请选择..."
+              >
+                <nz-option
+                  *ngFor="let option of item.selectionList"
+                  [nzValue]="option.id"
+                  [nzLabel]="option.name"
+                ></nz-option>
+              </nz-select>
+            </ng-container>
+
+            <!-- 部门 职位 汇报人 -->
+            <ng-container *ngSwitchCase="'sys_control'">
+              <nz-input-group
+                [nzSuffix]="
+                  isRelated && item.type === 'DEPARTMENT_CHOICE_SINGLE' ? forbid : self.value ? IconLow : IconAdd
+                "
+              >
+                <input type="text" nz-input readonly [formControlName]="item.key" #self placeholder="请选择" />
+              </nz-input-group>
+              <ng-template #IconAdd>
+                <i
+                  nz-icon
+                  nzType="plus-circle"
+                  class="org-icon"
+                  nzTheme="outline"
+                  (click)="addSysCtrls(item.type, item.key)"
+                ></i>
+              </ng-template>
+              <ng-template #IconLow>
+                <i
+                  nz-icon
+                  nzType="close"
+                  class="org-icon"
+                  nzTheme="outline"
+                  (click)="clearSysCtrls(item.type, item.key)"
+                ></i>
+              </ng-template>
+
+              <ng-template #forbid> </ng-template>
+            </ng-container>
+
+            <!-- err msg -->
+            <ng-template #ruleErrorTip let-i>
+              <ng-container *ngIf="i.errors.required"> {{ item.label }}不能为空 </ng-container>
+              <ng-container *ngIf="i.errors?.rule"> {{ i.errors?.rule }} </ng-container>
+              <ng-container *ngIf="i.errors?.email"> {{ item.label }}不正确 </ng-container>
+            </ng-template>
+          </nz-form-control>
+        </ng-container>
+      </ng-container>
+    </nz-form-item>
+  </form>
+  <div class="footer" *ngIf="!formDisabled">
+    <button nzType="primary" nz-button [nzLoading]="saveLoading" (click)="onSubmit('save')">
+      保存
+    </button>
+
+    <button
+      nzType="primary"
+      nz-button
+      nzGhost
+      host-button
+      *ngIf="['add', 'entry'].includes(operat)"
+      [nzLoading]="saveLoading"
+      (click)="onSubmit('submit')"
+    >
+      办理入职
+    </button>
+    <button nzType="primary" nz-button nzGhost host-button (click)="onCancel()">取消</button>
+  </div>
+</div>

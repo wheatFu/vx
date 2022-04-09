@@ -1,0 +1,111 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    人事管理
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    离职员工管理
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+<div class="dismiss-main">
+  <div class="right">
+    <div class="right-top">
+      <div class="right-menu">
+        <nz-input-group [nzSuffix]="suffixIconSearch" nzSearch>
+          <input type="text" nz-input placeholder="查询" [(ngModel)]="query" (ngModelChange)="handleInputKeyup()" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <span class="icon-ic_search" nzSearch (click)="handleInputKeyup()"></span>
+        </ng-template>
+        <!--        <span class="query" (click)="handleInputKeyup()">高级查询</span>-->
+      </div>
+      <div class="right-setting">
+        <button nzType="primary" nz-button nzGhost host-button (click)="exportPosition()">
+          <span class="custom-icon icon-ic_export"></span>导出
+        </button>
+        <button nzType="primary" nz-button nzGhost host-button>
+          <span class="custom-icon icon-ic_setting"></span>
+          表格设置
+        </button>
+      </div>
+    </div>
+    <!-- table -->
+    <div class="table-warp" #tableWarp>
+      <ng-container *ngIf="pageState != 3">
+        <div class="empty">
+          <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
+          <div class="empty-img" *ngIf="pageState == 2"></div>
+        </div>
+      </ng-container>
+      <div class="sv-panel-body" *ngIf="pageState === 3">
+        <nz-table
+          #basicTable
+          class="table-theme-default quit-style"
+          [nzData]="tableData"
+          [nzLoading]="false"
+          [nzShowPagination]="false"
+          [nzPageSize]="pagesize"
+          [nzScroll]="tableScroll"
+        >
+          <thead>
+            <tr>
+              <th nzWidth="80px">序号</th>
+              <th nzWidth="80px">工号</th>
+              <th nzWidth="80px">姓名</th>
+              <th nzWidth="120px">部门</th>
+              <th nzWidth="160px">职位</th>
+              <th nzWidth="120px">性别</th>
+              <th nzWidth="120px">入职日期</th>
+              <th nzWidth="140px">手机</th>
+              <th nzWidth="140px">邮箱</th>
+              <th nzWidth="120px">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dat of basicTable.data; index as i">
+              <td>{{ i + 1 }}</td>
+              <td>{{ dat.code }}</td>
+              <td>{{ dat.name }}</td>
+              <td>{{ dat.organizationName }}</td>
+              <td>{{ dat.positionName }}</td>
+              <td>{{ dat.gender }}</td>
+              <td>{{ dat.hireDate }}</td>
+              <td>{{ dat.mobile }}</td>
+              <td>{{ dat.email }}</td>
+              <td>
+                <div class="btn-td-operat-group">
+                  <a
+                    nz-button
+                    nzType="link"
+                    [routerLink]="['/hr/edit/org_employee']"
+                    [queryParams]="{ type: 'look', id: dat.id, source: 'resign' }"
+                    >查看</a
+                  >
+                  <a
+                    nz-button
+                    nzType="link"
+                    [routerLink]="['/hr/edit/org_employee']"
+                    [queryParams]="{ type: 'edit', id: dat.id, source: 'resign' }"
+                    >编辑</a
+                  >
+                  <a nz-button nzType="link" [routerLink]="'/hr/staff-history'" [queryParams]="{ id: dat.id,code:dat.code }"
+                    >员工历史</a
+                  >
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+      <div class="sv-panel-footer" *ngIf="tableData.length && pageState === 3">
+        <vx-pagination
+          [totalCount]="totalcount"
+          [(pageIndex)]="pageindex"
+          [(pageSize)]="pagesize"
+          (pageSizeChange)="pageSizeChange($event)"
+          (pageIndexChange)="pageIndexChange($event)"
+        >
+        </vx-pagination>
+      </div>
+    </div>
+  </div>
+</div>

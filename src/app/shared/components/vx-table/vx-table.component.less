@@ -1,0 +1,34 @@
+.tdEllipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+.tdBreakWord {
+  word-break: break-all;
+}
+
+::ng-deep {
+  .table-radio > .ant-radio-wrapper {
+    margin-right: 3px;
+  }
+  .table-radio span.ant-radio + * {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+}
+
+.menu {
+  display: block;
+  width: 24px;
+  height: 16px;
+  background: #71a9ff;
+  border-radius: 8px;
+  text-align: center;
+  line-height: 16px;
+  margin-left: 8px;
+  & > i {
+    color: #fff;
+  }
+}

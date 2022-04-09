@@ -1,0 +1,72 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    <a>人事管理</a>
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    在职员工管理
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    员工关系图
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+<div class="relation-graph-main">
+  <div class="top">
+    <div class="employee-info-box">
+      <img [src]="employInfo?.profile" class="avatar-style" />
+      <div class="info">
+        <div>{{ employInfo?.name }}</div>
+        <div>{{ employInfo?.positionName }} / {{ employInfo?.organizationName }}</div>
+      </div>
+    </div>
+    <div class="tab-box">
+      <ul nz-menu nzMode="horizontal">
+        <li nz-menu-item [nzSelected]="true" (click)="toggle('A')">
+          人员汇报
+        </li>
+        <li nz-menu-item (click)="toggle('B')">
+          职位汇报
+        </li>
+      </ul>
+    </div>
+    <div class="right-setting">
+      <button nzType="primary" nz-button nzGhost host-button [routerLink]="'/hr/inservice'">
+        <span class="custom-icon icon-ic_back"></span>取消
+      </button>
+    </div>
+  </div>
+  <div class="graph-warp">
+    <ng-container *ngIf="toggleUI === 'A'">
+      <ng-container *ngIf="!hasPersonnelGraphData">
+        <div class="empty">
+          <div class="empty-img"></div>
+        </div>
+      </ng-container>
+      <app-tree-graph
+        [data]="personnelGraphSource"
+        style="height:100%;"
+        (zoomEmit)="handleZoom($event)"
+        *ngIf="hasPersonnelGraphData"
+      ></app-tree-graph>
+    </ng-container>
+    <ng-container *ngIf="toggleUI === 'B'">
+      <ng-container *ngIf="!hasPositionGraphData">
+        <div class="empty">
+          <div class="empty-img"></div>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="graphTabs.length > 1">
+        <ul nz-menu nzMode="horizontal" class="custom-menu">
+          <li nz-menu-item [nzSelected]="tab.selected" (click)="toggleTab(tab.id)" *ngFor="let tab of graphTabs">
+            {{ tab.name }}职位架构图
+          </li>
+        </ul>
+      </ng-container>
+      <app-tree-graph
+        [data]="positionGraphSource"
+        style="height:100%;"
+        (zoomEmit)="handleZoom($event)"
+        *ngIf="hasPositionGraphData"
+      ></app-tree-graph>
+    </ng-container>
+  </div>
+</div>

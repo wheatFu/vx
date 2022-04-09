@@ -1,0 +1,62 @@
+<div class="base-info">
+  <!-- table -->
+  <ng-template #empty>
+    <div class="table-empty">
+      <nz-spin nzTip="Loading..." *ngIf="pageState == 1"></nz-spin>
+    </div>
+  </ng-template>
+  <ng-container *ngIf="pageState === 2; else empty">
+    <div class="sv-panel-body">
+      <nz-table
+        #basicTable
+        nzBordered
+        class="table-theme-default quit-style"
+        [nzData]="listdata"
+        [nzLoading]="false"
+        [nzShowPagination]="false"
+        [nzPageSize]="pagesize"
+        [nzScroll]="{ y: 'calc(100vh - 280px)' }"
+      >
+        <thead>
+          <tr>
+            <th nzWidth="50px" rowspan="2">序号</th>
+            <th nzWidth="90px" colspan="3">调动前</th>
+            <th nzWidth="90px" colspan="3">调动后</th>
+            <th nzWidth="120px" rowspan="2">操作日期</th>
+          </tr>
+          <tr>
+            <th nzWidth="80px">职位</th>
+            <th nzWidth="80px">部门</th>
+            <th nzWidth="80px">汇报人</th>
+            <th nzWidth="80px">职位</th>
+            <th nzWidth="80px">部门</th>
+            <th nzWidth="80px">汇报人</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let dat of basicTable.data; index as i">
+            <td nzBreakWord>{{ i + 1 }}</td>
+            <td nzBreakWord>{{ dat?.transferContent?.old_positionName || '-' }}</td>
+            <td nzBreakWord>{{ dat?.transferContent?.old_organizationName }}</td>
+            <td nzBreakWord>{{ dat?.transferContent?.old_reportToName || '-' }}</td>
+
+            <td nzBreakWord>{{ dat?.transferContent?.positionName || '-' }}</td>
+            <td nzBreakWord>{{ dat?.transferContent?.organizationName || '-' }}</td>
+            <td nzBreakWord>{{ dat?.transferContent?.reportToName || '-' }}</td>
+            <td nzBreakWord>{{ (dat?.transferDate | date: 'yyyy-MM-dd') || '-' }}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+    <div class="sv-panel-footer" *ngIf="listdata.length">
+      <vx-pagination
+        [totalCount]="totalcount"
+        [(pageIndex)]="pageindex"
+        [(pageSize)]="pagesize"
+        (pageSizeChange)="pageSizeChange($event)"
+        (pageIndexChange)="pageIndexChange($event)"
+      >
+      </vx-pagination>
+    </div>
+  </ng-container>
+</div>

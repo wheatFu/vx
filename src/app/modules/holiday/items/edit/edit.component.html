@@ -1,0 +1,328 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    <a [routerLink]="'/holiday/items'">休假管理</a>
+  </nz-breadcrumb-item>
+  <nz-breadcrumb-item>
+    {{ positionInfo?.id ? '编辑休假项目' : '新建休假项目' }}
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+<div class="items-edit-form-warp">
+  <form nz-form [formGroup]="validateForm">
+    <div class="label-title">目标关联设置</div>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">休假项目编码</nz-form-label>
+      <nz-form-control [nzSpan]="6" nzErrorTip="休假项目编码不能为空">
+        <input nz-input placeholder="请输入" formControlName="code" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">休假项目名称</nz-form-label>
+      <nz-form-control [nzSpan]="6" nzErrorTip="休假项目名称不能为空">
+        <input nz-input placeholder="请输入" formControlName="name" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">休假项目单位</nz-form-label>
+      <nz-form-control [nzSpan]="6" nzErrorTip="休假项目单位不能为空">
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择休假项目单位" formControlName="unit">
+          <nz-option
+            *ngFor="let option of isSupervisorOptions"
+            [nzLabel]="option.label"
+            [nzValue]="option.value"
+          ></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">休假最小单位</nz-form-label>
+      <nz-form-control [nzSpan]="6" nzErrorTip="休假最小单位不能为空">
+        <input nz-input placeholder="请输入" formControlName="minUnit" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true">休假额度类型</nz-form-label>
+      <nz-form-control [nzSpan]="6" nzErrorTip="休假额度类型不能为空">
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择休假额度类型" formControlName="type">
+          <nz-option
+            *ngFor="let option of quotaType"
+            [nzLabel]="option.label"
+            [nzValue]="option.value"
+          ></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSpan]="3">休假项目描述</nz-form-label>
+      <nz-form-control [nzSpan]="9">
+        <textarea formControlName="description" nz-input rows="4" placeholder="请输入内容..."></textarea>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-divider nzPlain class="divide-line"></nz-divider>
+    <nz-form-item>
+      <div class="label-title">额度规则</div>
+    </nz-form-item>
+    <nz-form-item class="special-item">
+      <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true" class="label-left">发放方式</nz-form-label>
+      <nz-form-control [nzSpan]="6" nzErrorTip="休假项目单位不能为空">
+        <nz-select
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="请选择发放方式"
+          formControlName="code"
+          (ngModelChange)="modelChange($event)"
+        >
+          <nz-option
+            *ngFor="let option of distributionWays"
+            [nzLabel]="option.label"
+            [nzValue]="option.value"
+          ></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <ng-container *ngIf="selectedDistributionWay == '1'">
+      <nz-form-item class="special-item ma-20">
+        <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true" class="label-left">发放时间</nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <nz-radio-group [(ngModel)]="distributionTimeRadioValue" formControlName="distributionTime">
+            <label nz-radio nzValue="naturalYear">按自然年</label>
+            <label nz-radio nzValue="entryDate">按入职日期</label>
+          </nz-radio-group>
+        </nz-form-control>
+        <nz-form-control [nzSpan]="4">
+          <div class="control-box">
+            <label class="label">发放日期</label>
+            <nz-date-picker formControlName="distributionDate" [nzAllowClear]="false"></nz-date-picker>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="special-item">
+        <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true" class="label-left">假期发放规则</nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <label nz-checkbox [(ngModel)]="workTimeChecked" [ngModelOptions]="{standalone: true}" (ngModelChange)='handleChange($event)'>按工龄</label>
+        </nz-form-control>
+      </nz-form-item>
+      <ng-container *ngIf="rulesByWorkTime.length > 0">
+        <nz-form-item *ngFor="let item of rulesByWorkTime; index as i">
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true"></nz-form-label>
+          <nz-form-control [nzSpan]="2">
+            <div class="custom-control-box">
+              <span class="sub-label">小于</span>
+              <nz-input-number
+                [(ngModel)]="item.year"
+                [nzMin]="1"
+                [nzStep]="1"
+                [ngModelOptions]="{standalone: true}"
+                class="custom-input-number border-r-6"
+              ></nz-input-number>
+              <span class="sub-label">年,</span>
+            </div>
+          </nz-form-control>
+          <nz-form-control [nzSpan]="3">
+            <div class="custom-control-box">
+              <span class="sub-label">享有</span>
+              <nz-input-number
+                [nzMin]="1"
+                [nzStep]="1"
+                [(ngModel)]="item.day"
+                [ngModelOptions]="{standalone: true}"
+                class="custom-input-number border-r-6"
+              ></nz-input-number>
+              <span class="sub-label">天</span>
+              <img src="/assets/images/ic_error.png" (click)="deleteWorkTimeRule(i)" class="delete-icon" />
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </ng-container>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true"></nz-form-label>
+        <nz-form-control [nzSpan]="6">
+          <button class="new-add" (click)="newAddRuleByWorkTime()"><span class="custom-icon icon-ic_add"></span>新增</button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true"></nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <label nz-checkbox [(ngModel)]="entryCompanyTimeChecked" [ngModelOptions]="{standalone: true}" (ngModelChange)='handleChange'>按司龄</label>
+        </nz-form-control>
+      </nz-form-item>
+      <ng-container *ngIf='rulesByEntryCompanyTime.length > 0'>
+        <nz-form-item *ngFor="let item of rulesByEntryCompanyTime; index as i">
+          <nz-form-label [nzSpan]="3" [nzNoColon]="true"></nz-form-label>
+          <nz-form-control [nzSpan]="2">
+            <div class="custom-control-box">
+              <span class="sub-label">小于</span>
+              <nz-input-number
+                [(ngModel)]="item.year"
+                [nzMin]="1"
+                [nzStep]="1"
+                [ngModelOptions]="{standalone: true}"
+                class="custom-input-number border-r-6"
+              ></nz-input-number>
+              <span class="sub-label">年,</span>
+            </div>
+          </nz-form-control>
+          <nz-form-control [nzSpan]="3">
+            <div class="custom-control-box">
+              <span class="sub-label">享有</span>
+              <nz-input-number
+                [(ngModel)]="item.day"
+                [nzMin]="1"
+                [nzStep]="1"
+                [ngModelOptions]="{standalone: true}"
+                class="custom-input-number border-r-6"
+              ></nz-input-number>
+              <span class="sub-label">天</span>
+              <img src="/assets/images/ic_error.png" (click)="deleteEntryCompanyTimeRule()" class="delete-icon" />
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </ng-container>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true"></nz-form-label>
+        <nz-form-control [nzSpan]="6">
+          <button class="new-add" (click)="newAddRuleByEntryCompanyTime()"><span class="custom-icon icon-ic_add"></span>新增</button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true"></nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <label nz-checkbox [(ngModel)]="fixedDayNums" [ngModelOptions]="{standalone: true}" (ngModelChange)='handleChange'>固定天数</label>
+        </nz-form-control>
+        <nz-form-control [nzSpan]="3">
+          <nz-input-number
+            style="width: 100%"
+            [nzMin]="1"
+            [nzStep]="1"
+            formControlName="name"
+          ></nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true"></nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <span class="custom-item-required">年假取值</span>
+        </nz-form-control>
+        <nz-form-control [nzSpan]="3">
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="请选择发放方式" formControlName="code">
+            <nz-option
+              *ngFor="let option of distributionWays"
+              [nzLabel]="option.label"
+              [nzValue]="option.value"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true"></nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <span class="custom-item-required">年假上限天数</span>
+        </nz-form-control>
+        <nz-form-control [nzSpan]="3">
+          <nz-input-number
+            style="width: 100%"
+            [nzMin]="1"
+            [nzStep]="1"
+            formControlName="name"
+          ></nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label [nzSpan]="3" [nzNoColon]="true"></nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <span class="custom-item-required">年假下限天数</span>
+        </nz-form-control>
+        <nz-form-control [nzSpan]="3">
+          <nz-input-number
+            style="width: 100%"
+            [nzMin]="1"
+            [nzStep]="1"
+            formControlName="name"
+          ></nz-input-number>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="special-item ma-20">
+        <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true" class="label-left">有效期</nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <nz-radio-group [(ngModel)]="efficientRadioValue" formControlName="distributionTime">
+            <label nz-radio nzValue="naturalYear">按自然年</label>
+            <label nz-radio nzValue="entryDate">按入职日期</label>
+          </nz-radio-group>
+        </nz-form-control>
+        <nz-form-control [nzSpan]="5">
+          <div style='margin-top: 44px'></div>
+          <div class="control-box">
+            <label class="label">发放日期</label>
+            <nz-date-picker formControlName="distributionDate" [nzAllowClear]="false"></nz-date-picker>
+            <label class="label" style="margin-left: 10px">年后失效</label>
+          </div>
+          <div class="control-box">
+            <label class="label">超过有效期</label>
+            <nz-date-picker formControlName="distributionDate" [nzAllowClear]="false"></nz-date-picker>
+            <label class="label" style="margin-left: 10px">内，依旧有效</label>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </ng-container>
+    <ng-container *ngIf="selectedDistributionWay == '2'">
+      <nz-form-item class="special-item">
+        <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true" class="label-left">发放时间</nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <div class="custom-control-box">
+            <span class="sub-label">每月</span>
+            <nz-input-number
+              [nzMin]="1"
+              [nzStep]="1"
+              formControlName="name"
+              class="custom-input-number border-r-1"
+            ></nz-input-number>
+            <span class="sub-label">发放</span>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="special-item">
+        <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true" class="label-left">假期发放规则</nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <div class="custom-control-box">
+            <span class="sub-label">固定天数</span>
+            <nz-input-number
+              [nzMin]="1"
+              [nzStep]="1"
+              formControlName="name"
+              class="custom-input-number border-r-1"
+            ></nz-input-number>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="special-item ma-20">
+        <nz-form-label [nzSpan]="3" nzRequired [nzNoColon]="true" class="label-left">有效期</nz-form-label>
+        <nz-form-control [nzSpan]="2">
+          <nz-radio-group [(ngModel)]="efficientRadioValue" formControlName="distributionTime">
+            <label nz-radio nzValue="naturalYear">按自然年</label>
+            <label nz-radio nzValue="entryDate">按入职日期</label>
+          </nz-radio-group>
+        </nz-form-control>
+        <nz-form-control [nzSpan]="5">
+          <div style='margin-top: 44px'></div>
+          <div class="control-box">
+            <label class="label">发放日期</label>
+            <nz-date-picker formControlName="distributionDate" [nzAllowClear]="false"></nz-date-picker>
+            <label class="label" style="margin-left: 10px">年后失效</label>
+          </div>
+          <div class="control-box">
+            <label class="label">超过有效期</label>
+            <nz-date-picker formControlName="distributionDate" [nzAllowClear]="false"></nz-date-picker>
+            <label class="label" style="margin-left: 10px">内，依旧有效</label>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </ng-container>
+  </form>
+  <div class="footer">
+    <nz-form-item>
+      <nz-form-control [nzOffset]="3" [nzSpan]="9">
+        <button nzType="primary" nz-button (click)="savePosition()">保存</button>
+        <button nzType="primary" nz-button nzGhost host-button (click)="doCancel()">取消</button>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</div>

@@ -1,0 +1,203 @@
+<div class="detail">
+  <ng-container *ngIf="changeType === 'CHANGE_CONTENT'">
+    <div class="detail-top">
+      <div class="detail-top-left">
+        <div><label>操作人:</label><span> {{ data?.createBy || '-' }}</span></div>
+        <div><label>操作时间:</label><span> {{ data?.createTime | date: 'yyyy/MM/dd HH:mm:ss' }}</span></div>
+      </div>
+    </div>
+    <!-- 信息变更 -->
+    <div class="table-warp" *ngIf="changeType === 'CHANGE_CONTENT'">
+      <div class="sv-panel-body">
+        <nz-table
+          #basicTable
+          class="table-theme-default quit-style"
+          [nzData]="data?.changeContent?.changeList || []"
+          [nzLoading]="false"
+          [nzShowPagination]="false"
+          [nzPageSize]="999"
+          [nzScroll]="{ y: '400px' }"
+        >
+          <thead>
+            <tr>
+              <th nzWidth="60px">序号</th>
+              <th nzWidth="120px">变更字段</th>
+              <th nzWidth="160px">调整前内容</th>
+              <th nzWidth="140px">调整后内容</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dat of basicTable.data; index as i">
+              <td>{{ i + 1 }}</td>
+              <td>{{ dat.attribute }}</td>
+              <td>{{ dat.oldValue }}</td>
+              <td style="padding-left: 20px;">{{ dat.newValue }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+  </ng-container>
+  <!-- 入职 -->
+  <ng-container *ngIf="changeType === 'PRE'">
+    <div class="entry-box">
+      <div class="info-box">
+        <img [src]="data?.changeContent?.profile" class="avatar-style" />
+      </div>
+      <div class="data-box">
+        <div class="new-item">
+          <label class="label">工号</label>
+          <span class="value">{{ data?.changeContent?.code || '-' }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">部门</label>
+          <span class="value">{{ data?.changeContent?.organizationName }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">姓名</label>
+          <span class="value">{{ data?.changeContent?.name }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">职位</label>
+          <span class="value">{{ data?.changeContent?.positionName }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">汇报人</label>
+          <span class="value">{{ data?.changeContent?.reportToName }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">证件类型</label>
+          <span class="value">{{ data?.changeContent?.credentialType }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">入职日期</label>
+          <span class="value">{{ data?.changeContent?.hireDate }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">证件号</label>
+          <span class="value">{{ data?.changeContent?.idNo }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">邮箱</label>
+          <span class="value">{{ data?.changeContent?.email }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">性别</label>
+          <span class="value">{{ data?.changeContent?.sex }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">手机</label>
+          <span class="value">{{ data?.changeContent?.mobile }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">出生日期</label>
+          <span class="value">{{ data?.changeContent?.birth }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">员工状态</label>
+          <span class="value">{{ data?.changeContent?.status }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">年龄</label>
+          <span class="value">{{ data?.changeContent?.age }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">操作人</label>
+          <span class="value">{{ data?.createBy || '-' }}</span>
+        </div>
+        <div class="new-item">
+          <label class="label">操作时间</label>
+          <span class="value">{{ data.createTime | date: 'yyyy/MM/dd HH:mm:ss' }}</span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <!-- 调动 -->
+  <ng-container *ngIf="changeType === 'TRANSFER'">
+    <div class="data-box">
+      <div class="new-item">
+        <label class="label">调动前部门</label>
+        <span class="value">{{ data?.changeContent?.old_organizationName || '-' }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">调动后部门</label>
+        <span class="value">{{ data?.changeContent?.organizationName }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">调动前职位</label>
+        <span class="value">{{ data?.changeContent?.old_positionName }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">调动后职位</label>
+        <span class="value">{{ data?.changeContent?.positionName }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">调动前汇报人</label>
+        <span class="value">{{ data?.changeContent?.old_reportToName || '-' }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">调动后汇报人</label>
+        <span class="value">{{ data?.changeContent?.reportToName }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">操作人</label>
+        <span class="value">{{ data?.createBy || '-' }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">操作时间</label>
+        <span class="value">{{ data.createTime }}</span>
+      </div>
+    </div>
+  </ng-container>
+
+  <!--  转正 -->
+  <ng-container *ngIf="changeType ==='REGULAR'">
+    <div class="data-box">
+      <div class="new-item">
+        <label class="label">转正类型</label>
+        <span class="value">{{ data?.changeContent?.regularTypeValue || '-' }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">转正日期</label>
+        <span class="value">{{ data?.changeContent?.regularDate || '-' }}</span>
+      </div>
+      <div class="new-item new-item-max">
+        <label class="label">转正评价</label>
+        <span class="value">{{ data?.changeContent?.regularComments || '-' }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">操作人</label>
+        <span class="value">{{ data?.createBy || '-' }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">操作时间</label>
+        <span class="value">{{ data.createTime }}</span>
+      </div>
+    </div>
+  </ng-container>
+  <!-- 离职 -->
+  <ng-container *ngIf="changeType==='RESIGN'">
+    <div class="data-box">
+      <div class="new-item">
+        <label class="label">离职类型</label>
+        <span class="value">{{ data?.changeContent?.resignTypeValue || '-' }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">离职日期</label>
+        <span class="value">{{ data?.changeContent?.resignDate }}</span>
+      </div>
+      <div class="new-item new-item-max">
+        <label class="label">离职原因</label>
+        <span class="value">{{ data?.changeContent?.resignReason || '-' }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">操作人</label>
+        <span class="value">{{ data?.createBy || '-' }}</span>
+      </div>
+      <div class="new-item">
+        <label class="label">操作时间</label>
+        <span class="value">{{ data.createTime }}</span>
+      </div>
+    </div>
+  </ng-container>
+</div>

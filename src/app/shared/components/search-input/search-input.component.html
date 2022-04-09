@@ -1,0 +1,13 @@
+<nz-input-group [nzSuffix]="nzSuffix" class="group-wrapper">
+  <input
+    type="text"
+    class="search"
+    nz-input
+    (keyup.enter)="keyUpSearch($event)"
+    [placeholder]="placeholder"
+    [(ngModel)]="model"
+  />
+</nz-input-group>
+<ng-template #nzSuffix>
+  <i class="icon-ic_search search-icon" (click)="keyUpSearch($event)"></i>
+</ng-template>

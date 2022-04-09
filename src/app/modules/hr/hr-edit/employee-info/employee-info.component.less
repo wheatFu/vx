@@ -1,0 +1,52 @@
+:host ::ng-deep {
+  .base-info {
+    width: 100%;
+    display: flex;
+    height: 100%;
+    padding: 30px 30px 20px;
+    .perch-box {
+      width: 94px;
+      height: 94px;
+      background: #f0f2f8;
+      border-radius: 50%;
+      i {
+        position: relative;
+        top: 39px;
+      }
+    }
+    .upload-warp {
+      width: 120px;
+      .avatar {
+        width: 86px;
+      }
+      .ant-upload-text {
+        margin-top: 5px;
+      }
+      .ant-upload {
+        background: none;
+        border: none;
+      }
+      .ant-upload.ant-upload-select-picture-card:hover {
+        border: none;
+      }
+    }
+    .form-warp {
+      display: flex;
+      flex: 1;
+      nz-input-number {
+        width: 100%;
+      }
+      .mask {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        top: 0;
+        text-align: center;
+        padding-top: 20%;
+      }
+      & > form {
+        width: 100%;
+      }
+    }
+  }
+}

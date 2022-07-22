@@ -74,6 +74,19 @@ export const SIDEBAR_MENU_DATA = {
             },
           ],
         },
+        {
+          text: 'demo',
+          link: '/demo',
+          i18n: 'menu.hcm.hr',
+          icon: 'anticon-user',
+          children: [
+            {
+              text: '入职管理',
+              link: '/entry',
+              i18n: 'menu.hcm.entry',
+            },
+          ],
+        },
       ],
     },
   ],

@@ -106,6 +106,12 @@
               "i18n": "menu.hcm.employee-holiday-detail"
             }
           ]
+        },
+        {
+          "text": "demo",
+          "link": "/demo",
+          "i18n": "menu.hcm.demo",
+          "icon": "anticon-appstore"
         }
       ]
     }

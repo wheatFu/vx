@@ -19,7 +19,8 @@
       "items": "休假项目",
       "scheme-setting": "休假方案设置",
       "quota": "休假额度",
-      "employee-holiday-detail": "员工休假明细"
+      "employee-holiday-detail": "员工休假明细",
+      "demo": "Demo"
     }
   },
   "app": {

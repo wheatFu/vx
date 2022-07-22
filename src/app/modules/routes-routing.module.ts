@@ -50,6 +50,10 @@ const routes: Routes = [
         path: 'holiday', // 休假管理
         loadChildren: () => import('./holiday/holiday.module').then(m => m.HolidayModule),
       },
+      {
+        path: 'demo', // demo
+        loadChildren: () => import('./demo/demo.module').then(m => m.DemoModule),
+      },
     ],
   },
 ]

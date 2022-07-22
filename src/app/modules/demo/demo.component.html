@@ -1,1 +1,5 @@
-<p>demo works!</p>
+<h2>*let</h2>
+
+<div *let="count$ | async as value">{{ value }}</div>
+
+<div *let="getter as value" class="value">{{ value }}{{ value }}{{ value }}</div>

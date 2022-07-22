@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core'
+import { NgModule, Type } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { ReactiveFormsModule, FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
@@ -25,6 +25,7 @@ import { OrgStatePipe, OrgChangeTypePipe, BoolePipePipe } from './pipes/index'
 
 // directive
 import { DirectiveModule } from './directive/directive.module'
+import { LetModule } from './pipes/let'
 
 const COMPONENTS_Chart = []
 
@@ -33,8 +34,7 @@ const THIRDMODULES = [NgZorroAntdModule, CountdownModule, UEditorModule, NgxTiny
 
 // #region your componets & directives
 const COMPONENTS = []
-
-const DIRECTIVES = []
+const DIRECTIVES: Array<Type<any>> = []
 // #endregion
 
 const PIPES = [OrgStatePipe, OrgChangeTypePipe, BoolePipePipe]
@@ -54,6 +54,7 @@ const PIPES = [OrgStatePipe, OrgChangeTypePipe, BoolePipePipe]
     SharedComponentsModule,
     KnxVuiModule,
     DirectiveModule,
+    LetModule,
     ...THIRDMODULES,
   ],
   declarations: [...COMPONENTS, ...DIRECTIVES, ...PIPES, ...COMPONENTS_Chart],
@@ -72,6 +73,7 @@ const PIPES = [OrgStatePipe, OrgChangeTypePipe, BoolePipePipe]
     KnxCoreModule,
     KnxVuiModule,
     DirectiveModule,
+    LetModule,
     ...THIRDMODULES,
     ...COMPONENTS,
     ...DIRECTIVES,

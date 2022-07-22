@@ -110,10 +110,10 @@ export const USERS = {
     phone: '你猜',
   },
   'POST /user/avatar': 'ok',
-  'POST /login/account': (req: MockRequest) => {
+  'POST /auth/login': (req: MockRequest) => {
     const data = req.body
     if (!(data.userName === 'admin') || data.password !== '123456') {
-      return { msg: `账号密码（admin|123456）` }
+      return { code: 0, msg: `账号密码（admin|123456）` }
     }
     return {
       msg: 'ok',

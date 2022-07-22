@@ -152,24 +152,24 @@ export class LoginComponent implements OnInit, OnDestroy {
       ()
       .subscribe(
         res => {
-          if (res.result.code !== 0) {
-            const { data } = res
-            // 清空路由复用信息
-            this.reuseTabService.clear()
-
-            // const userInfo = data.isAdmin ? { name: data.name } : data.employee
-            // this.settingsService.setUser(userInfo) // 简单用户信息{user: xxx}
-            // this.authService.setUserInfo(data) // 中台common用户信息
-            // this.authService.setSelectData(dataConfig) // 2021720中台取消全部数据字典接口
-
-            let url = this.tokenService.referrer!.url || '/'
-            if (url.includes('/passport')) {
-              url = '/'
-            }
-            this.router.navigateByUrl(url)
-          } else {
-            this.msg.error(res.result.message)
+          let url = this.tokenService.referrer!.url || '/'
+          if (url.includes('/passport')) {
+            url = '/'
           }
+          this.router.navigateByUrl(url)
+          // if (res.result.code !== 0) {
+          //   const { data } = res
+          //   // 清空路由复用信息
+          //   this.reuseTabService.clear()
+
+          //   // const userInfo = data.isAdmin ? { name: data.name } : data.employee
+          //   // this.settingsService.setUser(userInfo) // 简单用户信息{user: xxx}
+          //   // this.authService.setUserInfo(data) // 中台common用户信息
+          //   // this.authService.setSelectData(dataConfig) // 2021720中台取消全部数据字典接口
+
+          // } else {
+          //   this.msg.error(res.result.message)
+          // }
           // this.menuService.add(SIDEBAR_MENU_DATA.menu[0].children)
           // 重新获取 StartupService 内容，我们始终认为应用信息一般都会受当前用户授权范围而影响
           // this.startupSrv.load().then(() => {})
